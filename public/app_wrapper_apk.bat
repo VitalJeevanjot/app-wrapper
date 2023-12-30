@@ -23,11 +23,14 @@ set ANDROID_SDK_ROOT "%ANDROID_SDK_ROOT%"
 @REM  sdkmanager.bat "build-tools;34.0.0"
 @REM  sdkmanager.bat "platforms;android-33"
 
+echo "DONE ON...."
 
 call node -v
 cd capacitor_config
 @REM call npx cap sync
 call npx cap run android
+
+echo "DONE OFF...."
 @REM call gradlew.bat assembleDebug
 cd ..
 

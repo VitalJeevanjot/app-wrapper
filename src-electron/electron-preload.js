@@ -27,3 +27,10 @@
  *   }
  * }
  */
+
+import { contextBridge, ipcRenderer } from "electron";
+contextBridge.exposeInMainWorld("AppWrapperAPI", {
+  runBatchFile: async () => {
+    return await ipcRenderer.invoke("run-script");
+  },
+});
