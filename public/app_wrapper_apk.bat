@@ -1,4 +1,5 @@
 @REM set "NODE_PATH=C:\Users\User\Downloads\node-v20.10.0-win-x64\node-v20.10.0-win-x64"
+cd %~dp0
 set "NODE_PATH=%~dp0\node-v20.10.0-win-x64"
 @REM set "COMMAND_LINE_TOOLS_PATH=C:\Users\User\Downloads\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
 set "COMMAND_LINE_TOOLS_PATH=%~dp0\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
