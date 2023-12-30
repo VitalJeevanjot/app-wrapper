@@ -1,21 +1,33 @@
-set "NODE_PATH=C:\Users\User\Downloads\node-v20.10.0-win-x64\node-v20.10.0-win-x64"
-set "COMMAND_LINE_TOOLS_PATH=C:\Users\User\Downloads\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
+@REM set "NODE_PATH=C:\Users\User\Downloads\node-v20.10.0-win-x64\node-v20.10.0-win-x64"
+set "NODE_PATH=%~dp0\node-v20.10.0-win-x64"
+@REM set "COMMAND_LINE_TOOLS_PATH=C:\Users\User\Downloads\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
+set "COMMAND_LINE_TOOLS_PATH=%~dp0\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
 @ REM rem Add the temporary paths to the existing PATH variable
 set PATH=%NODE_PATH%;%COMMAND_LINE_TOOLS_PATH%;%PATH%
 
 
 
-set "JAVA_HOME=C:\Users\User\Downloads\jdk-17_windows-x64_bin\jdk-17.0.9"
+set "JAVA_HOME=%~dp0\jdk-17_windows-x64_bin\jdk-17.0.9"
 @ REM rem Set a new environment variable with the specified path
-setx JAVA_HOME "%JAVA_HOME%"
+set JAVA_HOME "%JAVA_HOME%"
 
-set "ANDROID_HOME=C:\Users\User\Downloads\commandlinetools-win-10406996_latest"
+set "ANDROID_HOME=%~dp0\commandlinetools-win-10406996_latest"
+set "ANDROID_SDK_ROOT=%~dp0\commandlinetools-win-10406996_latest"
 @ REM rem Set a new environment variable with the specified path
-setx ANDROID_HOME "%ANDROID_HOME%"
+set ANDROID_HOME "%ANDROID_HOME%"
+set ANDROID_SDK_ROOT "%ANDROID_SDK_ROOT%"
 
-node -v
 
-call gradlew.bat assembleDebug
-@REM npx cap run android
+@REM sdkmanager.bat "platform-tools"
+@REM  sdkmanager.bat "build-tools;34.0.0"
+@REM  sdkmanager.bat "platforms;android-33"
+
+
+call node -v
+cd capacitor_config
+@REM call npx cap sync
+call npx cap run android
+@REM call gradlew.bat assembleDebug
+cd ..
 
 
