@@ -33,4 +33,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   runBatchFile: async () => {
     return await ipcRenderer.invoke("run-script");
   },
+  getPublicFolderPath: () => {
+    return ipcRenderer.invoke("get-public-path");
+  },
 });

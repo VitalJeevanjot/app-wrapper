@@ -42,6 +42,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
   createWindow();
 });
@@ -58,6 +59,9 @@ app.on("activate", () => {
   }
 });
 
+function getPublicPath() {
+  return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+}
 async function runScript(e) {
   var file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),

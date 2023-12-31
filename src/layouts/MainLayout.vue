@@ -35,6 +35,12 @@
   </q-layout>
 </template>
 
+<style scoped>
+body {
+  font-family: "Raleway-Medium";
+}
+</style>
+
 <script>
 import { defineComponent, ref } from "vue";
 // import EssentialLink from "components/EssentialLink.vue";
@@ -103,7 +109,8 @@ export default defineComponent({
   },
   async mounted() {
     console.log("starting...");
-    await window.AppWrapperAPI.runBatchFile();
+    console.log(await window.AppWrapperAPI.getPublicFolderPath()); // Remove it only after checking on built version that it return path correct for dependencies
+    // await window.AppWrapperAPI.runBatchFile();
   },
 });
 </script>
