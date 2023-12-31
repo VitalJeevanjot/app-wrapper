@@ -9,14 +9,12 @@ set PATH=%NODE_PATH%;%COMMAND_LINE_TOOLS_PATH%;%PATH%
 
 
 set "JAVA_HOME=%~dp0\jdk-17_windows-x64_bin\jdk-17.0.9"
+@REM echo %JAVA_HOME%
 @ REM rem Set a new environment variable with the specified path
-set JAVA_HOME "%JAVA_HOME%"
 
 set "ANDROID_HOME=%~dp0\commandlinetools-win-10406996_latest"
 set "ANDROID_SDK_ROOT=%~dp0\commandlinetools-win-10406996_latest"
 @ REM rem Set a new environment variable with the specified path
-set ANDROID_HOME "%ANDROID_HOME%"
-set ANDROID_SDK_ROOT "%ANDROID_SDK_ROOT%"
 
 
 @REM sdkmanager.bat "platform-tools"

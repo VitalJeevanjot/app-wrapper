@@ -72,15 +72,15 @@ async function runScript(e) {
   //   console.log(stdout);
   // });
   console.log(file_path);
-  const ls = spawn("cmd.exe", ["/c", file_path], { stdio: ["pipe"] });
+  const ls = spawn("cmd.exe", ["/c", file_path]);
 
   // ls.stdin.on("data", (data) => {
   //   console.log(`stdin: ${data}`);
   // });
 
   // userInput = "\x1B[A"; // UP Arrow
-  // userInput = "\x1B[B"; // Down Arrow
-  userInput = "\x0D"; // Carriage return
+  userInput = "\x1B[B"; // Down Arrow
+  // userInput = "\x0D"; // Carriage return
   ls.stdin.write(userInput);
 
   ls.stdout.on("data", (data) => {
