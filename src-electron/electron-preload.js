@@ -36,4 +36,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getPublicFolderPath: () => {
     return ipcRenderer.invoke("get-public-path");
   },
+  buildAppFromURL: (url) => {
+    return ipcRenderer.invoke("build-app-from-URL", url);
+  },
 });

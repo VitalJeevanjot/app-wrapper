@@ -15,7 +15,11 @@
       />
     </div>
     <div class="row justify-center q-mt-sm">
-      <q-btn rounded flat class="bg-grey-3 text-black" @click="createBuild"
+      <q-btn
+        rounded
+        flat
+        class="bg-grey-3 text-black"
+        @click="createBuildFromURL"
         >Build</q-btn
       >
     </div>
@@ -33,8 +37,8 @@ export default defineComponent({
     };
   },
   methods: {
-    createBuild() {
-      console.log("hello");
+    async createBuildFromURL() {
+      await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
   },
 });

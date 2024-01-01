@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 const { exec, spawn } = require("node:child_process");
+const fs = require("node:fs");
 import path from "path";
 import os from "os";
 
@@ -7,6 +8,39 @@ import os from "os";
 const platform = process.platform || os.platform();
 
 let mainWindow;
+
+var height, width, src_url, iframe_style;
+
+function getContent() {
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body style="margin: 0px; padding: 0px; overflow: hidden">
+    <iframe
+      title="Testing"
+      height=""
+      allowtransparency="true"
+      width=""
+      frameborder="0"
+      id="iframe"
+      src="https://nodejs.org/en/learn/manipulating-files/writing-files-with-nodejs"
+      style="pointer-events: auto"
+    ></iframe>
+  </body>
+
+  <script>
+    document
+      .getElementById("iframe")
+      .setAttribute("height", window.innerHeight);
+    document.getElementById("iframe").setAttribute("width", window.innerWidth);
+  </script>
+</html>
+  `;
+}
 
 function createWindow() {
   /**
@@ -44,6 +78,7 @@ function createWindow() {
 app.whenReady().then(() => {
   ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
+  ipcMain.handle("build-app-from-URL", buildAppFromURL);
   createWindow();
 });
 
@@ -61,6 +96,25 @@ app.on("activate", () => {
 
 function getPublicPath() {
   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+}
+async function buildAppFromURL(e, url) {
+  src_url = url;
+  fs.writeFile(
+    path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      "capacitor_config",
+      "www",
+      "index.html"
+    ),
+    getContent(),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  runScript();
 }
 async function runScript(e) {
   var file_path = `${path.join(
@@ -83,8 +137,8 @@ async function runScript(e) {
   // });
 
   // userInput = "\x1B[A"; // UP Arrow
-  userInput = "\x1B[B"; // Down Arrow
-  // userInput = "\x0D"; // Carriage return
+  // userInput = "\x1B[B"; // Down Arrow
+  userInput = "\x0D"; // Carriage return
   ls.stdin.write(userInput);
 
   ls.stdout.on("data", (data) => {
