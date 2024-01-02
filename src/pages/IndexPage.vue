@@ -28,8 +28,11 @@
         "
       >
         <template v-slot:default>
-          <div class="absolute-full flex flex-center bg-grey text-white">
-            {{ img.default_placeholder_text }}
+          <div class="absolute-full bg-grey text-white">
+            <div class="row justify-center">➕</div>
+            <div class="row justify-center">
+              {{ img.default_placeholder_text }}
+            </div>
           </div>
         </template>
       </q-img>
