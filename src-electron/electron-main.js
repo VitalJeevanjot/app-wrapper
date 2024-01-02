@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, nativeImage } from "electron";
 const { exec, spawn } = require("node:child_process");
 const fs = require("node:fs");
 import path from "path";
@@ -84,6 +84,7 @@ app.whenReady().then(() => {
   ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
   ipcMain.handle("build-app-from-URL", buildAppFromURL);
+  ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   createWindow();
 });
 
@@ -136,16 +137,13 @@ async function runScript(e) {
   // });
   console.log(file_path);
   const ls = spawn("cmd.exe", ["/c", file_path]);
-
   // ls.stdin.on("data", (data) => {
   //   console.log(`stdin: ${data}`);
   // });
-
   // userInput = "\x1B[A"; // UP Arrow
   // userInput = "\x1B[B"; // Down Arrow
   userInput = "\x0D"; // Carriage return
   ls.stdin.write(userInput);
-
   ls.stdout.on("data", (data) => {
     console.log(`stdout: ${data}`);
     // if (data.includes("Please choose a target device")) {
@@ -154,12 +152,24 @@ async function runScript(e) {
     //   ls.stdin.write(userInput);
     // }
   });
-
   ls.stderr.on("data", (data) => {
     console.error(`stderr: ${data}`);
   });
-
   ls.on("close", (code) => {
     console.log(`child process exited with code ${code}`);
   });
+}
+
+async function selectAndShowIMG(event) {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    title: "Select directories with jpg/png",
+    properties: ["openFile"],
+    filters: [{ name: "Images", extensions: ["jpg", "png"] }],
+  });
+  // Todo: create a local copy with changed name
+  let result = await nativeImage.createThumbnailFromPath(filePaths[0], {
+    width: 300,
+    height: 300,
+  });
+  return [result.toDataURL(), filePaths[0]];
 }

@@ -16,7 +16,7 @@
     </div>
     <div class="row justify-center q-mt-sm">
       <q-img
-        v-for="img in selectedImages"
+        v-for="(img, index) in selectedImages"
         :key="img.default_placeholder_text"
         :src="img.img_path"
         style="
@@ -25,9 +25,11 @@
           min-width: 100px;
           min-height: 100px;
           margin: 10px;
+          cursor: pointer;
         "
+        @click="addImage(index)"
       >
-        <template v-slot:default>
+        <template v-slot:default v-if="!img.img_path">
           <div class="absolute-full bg-grey text-white">
             <div class="row justify-center">➕</div>
             <div class="row justify-center">
@@ -35,6 +37,9 @@
             </div>
           </div>
         </template>
+        <q-tooltip class="text-subtitle2" v-if="img.img_path">{{
+          img.default_placeholder_text
+        }}</q-tooltip>
       </q-img>
     </div>
     <div class="row justify-center q-mt-sm">
@@ -73,6 +78,11 @@ export default defineComponent({
         Notify.create({ message: "⚠️ Website URL required", color: "black" });
       }
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
+    },
+    async addImage(_index) {
+      let img_data = await window.AppWrapperAPI.selectAndShowImage();
+      this.selectedImages[_index].img_path = img_data[0];
+      this.selectedImages[_index].default_placeholder_text = img_data[1];
     },
   },
   mounted() {

@@ -39,4 +39,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   buildAppFromURL: (url) => {
     return ipcRenderer.invoke("build-app-from-URL", url);
   },
+  selectAndShowImage: () => {
+    return ipcRenderer.invoke("select-and-show-IMG");
+  },
 });
