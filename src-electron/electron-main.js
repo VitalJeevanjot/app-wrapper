@@ -33,10 +33,14 @@ function getContent() {
   </body>
 
   <script>
-    document
-      .getElementById("iframe")
-      .setAttribute("height", window.innerHeight);
-    document.getElementById("iframe").setAttribute("width", window.innerWidth);
+    window.addEventListener("deviceorientation", (e) => {handleFrameSize()}, true);
+    handleFrameSize();
+    function handleFrameSize() {
+      document
+        .getElementById("iframe")
+        .setAttribute("height", window.innerHeight);
+      document.getElementById("iframe").setAttribute("width", window.innerWidth);
+    }
   </script>
 </html>
   `;
@@ -48,6 +52,7 @@ function createWindow() {
    */
   mainWindow = new BrowserWindow({
     icon: path.resolve(__dirname, "icons/icon.png"), // tray icon
+    autoHideMenuBar: true,
     width: 1000,
     height: 600,
     useContentSize: true,

@@ -15,6 +15,32 @@
       />
     </div>
     <div class="row justify-center q-mt-sm">
+      <q-img
+        v-for="img in selectedImages"
+        :key="img.default_placeholder_text"
+        :src="img.img_path"
+        style="
+          width: 10vw;
+          height: 10vw;
+          min-width: 100px;
+          min-height: 100px;
+          margin: 10px;
+        "
+      >
+        <template v-slot:default>
+          <div class="absolute-full flex flex-center bg-grey text-white">
+            {{ img.default_placeholder_text }}
+          </div>
+        </template>
+      </q-img>
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <span class="text-subtitle2"
+        >Icon files should be at least 1024px x 1024px & Splash screen files
+        should be at least 2732px x 2732px.</span
+      >
+    </div>
+    <div class="row justify-center q-mt-sm">
       <q-btn
         rounded
         flat
@@ -28,18 +54,45 @@
 
 <script>
 import { defineComponent } from "vue";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "IndexPage",
   data() {
     return {
       website_input: "",
+      selectedImages: [],
     };
   },
   methods: {
     async createBuildFromURL() {
-      await window.AppWrapperAPI.buildAppFromURL(this.website_input);
+      if (!this.website_input) {
+        Notify.create({ message: "⚠️ Website URL required", color: "black" });
+      }
+      // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
+  },
+  mounted() {
+    this.selectedImages.push({
+      img_path: "",
+      default_placeholder_text: "Icon Only",
+    });
+    this.selectedImages.push({
+      img_path: "",
+      default_placeholder_text: "Icon Foreground",
+    });
+    this.selectedImages.push({
+      img_path: "",
+      default_placeholder_text: "Icon Background",
+    });
+    this.selectedImages.push({
+      img_path: "",
+      default_placeholder_text: "Splash",
+    });
+    this.selectedImages.push({
+      img_path: "",
+      default_placeholder_text: "Splash Dark",
+    });
   },
 });
 </script>
