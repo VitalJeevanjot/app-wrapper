@@ -36,8 +36,8 @@
     </div>
     <div class="row justify-center q-mt-sm">
       <span class="text-subtitle2"
-        >Icon files should be at least 1024px x 1024px & Splash screen files
-        should be at least 2732px x 2732px.</span
+        >Click on them to upload. Icon files should be at least 1024px x 1024px
+        & Splash screen files should be at least 2732px x 2732px.</span
       >
     </div>
     <div class="row justify-center q-mt-sm">
