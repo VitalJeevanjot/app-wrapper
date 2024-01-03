@@ -15,32 +15,55 @@
       />
     </div>
     <div class="row justify-center q-mt-sm">
-      <q-img
+      <div
+        class="container"
         v-for="(img, index) in selectedImages"
-        :key="img.default_placeholder_text"
-        :src="img.img_path"
-        style="
-          width: 10vw;
-          height: 10vw;
-          min-width: 100px;
-          min-height: 100px;
-          margin: 10px;
-          cursor: pointer;
-        "
-        @click="addImage(index)"
+        :key="img.path"
       >
-        <template v-slot:default v-if="!img.img_path">
-          <div class="absolute-full bg-grey text-white">
-            <div class="row justify-center">➕</div>
-            <div class="row justify-center">
-              {{ img.default_placeholder_text }}
+        <q-img
+          :src="img.data"
+          class="self-start"
+          style="
+            width: 10vw;
+            height: 10vw;
+            min-width: 100px;
+            min-height: 100px;
+            cursor: pointer;
+          "
+          @click="addImage(index)"
+        >
+          <template v-slot:default v-if="!img.data">
+            <div class="absolute-full bg-grey text-white">
+              <div class="row justify-center">➕</div>
+              <div class="row justify-center">
+                {{ img.default_placeholder_text }}
+              </div>
             </div>
-          </div>
-        </template>
-        <q-tooltip class="text-subtitle2" v-if="img.img_path">{{
-          img.default_placeholder_text
-        }}</q-tooltip>
-      </q-img>
+          </template>
+          <q-tooltip class="text-subtitle2" v-if="img.img_path">{{
+            img.default_placeholder_text
+          }}</q-tooltip>
+        </q-img>
+
+        <q-btn
+          class="text-white btn bg-grey-10"
+          dense
+          size="0.8rem"
+          flat
+          icon="info"
+          rounded
+          @click="openImageInfoDialog(index)"
+          ><q-tooltip>More info.</q-tooltip></q-btn
+        >
+        <p
+          style="width: 10vw; min-width: 100px; overflow-wrap: break-word"
+          class="text-black q-pt-xs"
+        >
+          {{
+            img.path ? img.path.split("\\").pop() : img.default_placeholder_text
+          }}
+        </p>
+      </div>
     </div>
     <div class="row justify-center q-mt-sm">
       <span class="text-subtitle2"
@@ -59,6 +82,18 @@
     </div>
   </q-page>
 </template>
+
+<style scoped>
+.container {
+  position: relative;
+  margin: 10px;
+}
+.container .btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+</style>
 
 <script>
 import { defineComponent } from "vue";
@@ -81,30 +116,36 @@ export default defineComponent({
     },
     async addImage(_index) {
       let img_data = await window.AppWrapperAPI.selectAndShowImage();
-      this.selectedImages[_index].img_path = img_data[0];
-      this.selectedImages[_index].default_placeholder_text = img_data[1];
+      if (img_data) {
+        this.selectedImages[_index].data = img_data[0];
+        this.selectedImages[_index].path = img_data[1];
+      }
     },
   },
   mounted() {
     this.selectedImages.push({
-      img_path: "",
+      data: "",
       default_placeholder_text: "Icon Only",
     });
     this.selectedImages.push({
-      img_path: "",
+      data: "",
       default_placeholder_text: "Icon Foreground",
+      path: "",
     });
     this.selectedImages.push({
-      img_path: "",
+      data: "",
       default_placeholder_text: "Icon Background",
+      path: "",
     });
     this.selectedImages.push({
-      img_path: "",
+      data: "",
       default_placeholder_text: "Splash",
+      path: "",
     });
     this.selectedImages.push({
-      img_path: "",
+      data: "",
       default_placeholder_text: "Splash Dark",
+      path: "",
     });
   },
 });

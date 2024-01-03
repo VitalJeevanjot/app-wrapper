@@ -166,10 +166,15 @@ async function selectAndShowIMG(event) {
     properties: ["openFile"],
     filters: [{ name: "Images", extensions: ["jpg", "png"] }],
   });
-  // Todo: create a local copy with changed name
-  let result = await nativeImage.createThumbnailFromPath(filePaths[0], {
-    width: 300,
-    height: 300,
-  });
-  return [result.toDataURL(), filePaths[0]];
+
+  if (!canceled) {
+    // Todo: create a local copy with changed name
+    let result = await nativeImage.createThumbnailFromPath(filePaths[0], {
+      width: 300,
+      height: 300,
+    });
+    return [result.toDataURL(), filePaths[0]];
+  } else {
+    return false;
+  }
 }
