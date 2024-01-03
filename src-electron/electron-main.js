@@ -85,6 +85,7 @@ app.whenReady().then(() => {
   ipcMain.handle("run-script", runScript);
   ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
+  ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
   createWindow();
 });
 
@@ -122,6 +123,51 @@ async function buildAppFromURL(e, url) {
   );
   runScript();
 }
+
+async function selectAndShowIMG(event) {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    title: "Select directories with jpg/png",
+    properties: ["openFile"],
+    filters: [{ name: "Images", extensions: ["jpg", "png"] }],
+  });
+
+  if (!canceled) {
+    // Todo: create a local copy with changed name
+    let result = await nativeImage.createThumbnailFromPath(filePaths[0], {
+      width: 300,
+      height: 300,
+    });
+    return [result.toDataURL(), filePaths[0]];
+  } else {
+    return false;
+  }
+}
+
+function setupIconsForBuild(event, _paths) {
+  let img_paths = JSON.parse(_paths);
+  var asssets_names = [
+    "icon-only",
+    "icon-foreground",
+    "icon-background",
+    "splash",
+    "splash-dark",
+  ];
+  for (let i = 0; i < 5; i++) {
+    if (img_paths[i].path) {
+      fs.copyFileSync(
+        img_paths[i].path,
+        path.resolve(
+          __dirname,
+          process.env.QUASAR_PUBLIC_FOLDER,
+          "capacitor_config",
+          "resources",
+          asssets_names[i] + "." + img_paths[i].path.split(".").pop()
+        )
+      );
+    }
+  }
+}
+
 async function runScript(e) {
   var file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
@@ -158,23 +204,4 @@ async function runScript(e) {
   ls.on("close", (code) => {
     console.log(`child process exited with code ${code}`);
   });
-}
-
-async function selectAndShowIMG(event) {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    title: "Select directories with jpg/png",
-    properties: ["openFile"],
-    filters: [{ name: "Images", extensions: ["jpg", "png"] }],
-  });
-
-  if (!canceled) {
-    // Todo: create a local copy with changed name
-    let result = await nativeImage.createThumbnailFromPath(filePaths[0], {
-      width: 300,
-      height: 300,
-    });
-    return [result.toDataURL(), filePaths[0]];
-  } else {
-    return false;
-  }
 }

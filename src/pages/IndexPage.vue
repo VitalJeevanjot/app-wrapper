@@ -46,14 +46,18 @@
         </q-img>
 
         <q-btn
-          class="text-white btn bg-grey-10"
+          class="text-white btn bg-grey-5"
           dense
           size="0.8rem"
           flat
           icon="info"
           rounded
-          @click="openImageInfoDialog(index)"
-          ><q-tooltip>More info.</q-tooltip></q-btn
+        >
+          <q-popup-proxy>
+            <q-banner>
+              {{ img.path ? img.path : "Not selected...." }}
+            </q-banner>
+          </q-popup-proxy></q-btn
         >
         <p
           style="width: 10vw; min-width: 100px; overflow-wrap: break-word"
@@ -111,7 +115,11 @@ export default defineComponent({
     async createBuildFromURL() {
       if (!this.website_input) {
         Notify.create({ message: "⚠️ Website URL required", color: "black" });
+        return;
       }
+      await window.AppWrapperAPI.setupIcons(
+        JSON.stringify(this.selectedImages)
+      );
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
@@ -126,6 +134,7 @@ export default defineComponent({
     this.selectedImages.push({
       data: "",
       default_placeholder_text: "Icon Only",
+      path: "",
     });
     this.selectedImages.push({
       data: "",

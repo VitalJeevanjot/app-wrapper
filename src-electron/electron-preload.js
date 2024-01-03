@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getPublicFolderPath: () => {
     return ipcRenderer.invoke("get-public-path");
   },
+  setupIcons: (paths_objects) => {
+    return ipcRenderer.invoke("setup-icons-for-build", paths_objects);
+  },
   buildAppFromURL: (url) => {
     return ipcRenderer.invoke("build-app-from-URL", url);
   },
