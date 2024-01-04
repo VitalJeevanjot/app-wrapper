@@ -76,6 +76,25 @@
       >
     </div>
     <div class="row justify-center q-mt-sm">
+      <q-toggle
+        label="Production"
+        v-model="productionModeToggle"
+        color="grey-9"
+        keep-color
+      />
+    </div>
+    <q-dialog v-model="terminarProcessDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Alert</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <div id="terminal" style="background-color: black"></div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <div class="row justify-center q-mt-sm">
       <q-btn
         rounded
         flat
@@ -100,15 +119,17 @@
 </style>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { Notify } from "quasar";
-
+import { Terminal } from "xterm";
 export default defineComponent({
   name: "IndexPage",
   data() {
     return {
       website_input: "",
       selectedImages: [],
+      productionModeToggle: false,
+      terminarProcessDialog: false,
     };
   },
   methods: {
@@ -117,9 +138,22 @@ export default defineComponent({
         Notify.create({ message: "⚠️ Website URL required", color: "black" });
         return;
       }
-      await window.AppWrapperAPI.setupIcons(
-        JSON.stringify(this.selectedImages)
-      );
+      this.terminarProcessDialog = true;
+      setTimeout(() => {
+        var term = new Terminal({
+          theme: {
+            background: "#00ff00",
+            selectionInactiveBackground: "#00ff00",
+            selectionBackground: "#00ff00",
+            foreground: "#ff0000",
+          },
+        });
+        term.open(document.getElementById("terminal"));
+        term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
+      }, 500);
+      // await window.AppWrapperAPI.setupIcons(
+      //   JSON.stringify(this.selectedImages)
+      // );
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
