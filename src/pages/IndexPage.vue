@@ -40,7 +40,7 @@
               </div>
             </div>
           </template>
-          <q-tooltip class="text-subtitle2" v-if="img.img_path">{{
+          <q-tooltip class="text-subtitle2" v-if="img.path">{{
             img.default_placeholder_text
           }}</q-tooltip>
         </q-img>

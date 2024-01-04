@@ -144,6 +144,16 @@ async function selectAndShowIMG(event) {
 }
 
 function setupIconsForBuild(event, _paths) {
+  let _current_path = path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER,
+    "capacitor_config",
+    "resources"
+  );
+  fs.rmSync(_current_path, { recursive: true, force: true });
+  if (!fs.existsSync(_current_path)) {
+    fs.mkdirSync(_current_path);
+  }
   let img_paths = JSON.parse(_paths);
   var asssets_names = [
     "icon-only",
@@ -157,10 +167,7 @@ function setupIconsForBuild(event, _paths) {
       fs.copyFileSync(
         img_paths[i].path,
         path.resolve(
-          __dirname,
-          process.env.QUASAR_PUBLIC_FOLDER,
-          "capacitor_config",
-          "resources",
+          _current_path,
           asssets_names[i] + "." + img_paths[i].path.split(".").pop()
         )
       );
