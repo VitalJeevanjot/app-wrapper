@@ -35,9 +35,10 @@
   </q-layout>
 </template>
 
-<style scoped>
+<style>
 body {
-  font-family: "Raleway-Medium";
+  background-color: #cfcfcf;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 </style>
 

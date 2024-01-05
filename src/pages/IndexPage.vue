@@ -10,9 +10,15 @@
         outlined
         v-model="website_input"
         label="Enter website"
-        color="grey-9"
+        color="black"
         style="width: 60vw; min-width: 250px"
       />
+    </div>
+    <div class="row justify-center q-mt-md">
+      <span class="text-subtitle2"
+        >Click on it to upload. Icon files should be at least 1024px x 1024px &
+        Splash screen files should be at least 2732px x 2732px.</span
+      >
     </div>
     <div class="row justify-center q-mt-sm">
       <div
@@ -33,8 +39,10 @@
           @click="addImage(index)"
         >
           <template v-slot:default v-if="!img.data">
-            <div class="absolute-full bg-grey text-white">
-              <div class="row justify-center">➕</div>
+            <div class="absolute-full bg-grey-9 text-white">
+              <div class="row justify-center">
+                <q-icon name="add" size="md" />
+              </div>
               <div class="row justify-center">
                 {{ img.default_placeholder_text }}
               </div>
@@ -46,7 +54,7 @@
         </q-img>
 
         <q-btn
-          class="text-white btn bg-grey-5"
+          class="text-white btn bg-grey-9"
           dense
           size="0.8rem"
           flat
@@ -69,28 +77,22 @@
         </p>
       </div>
     </div>
-    <div class="row justify-center q-mt-sm">
-      <span class="text-subtitle2"
-        >Click on them to upload. Icon files should be at least 1024px x 1024px
-        & Splash screen files should be at least 2732px x 2732px.</span
-      >
-    </div>
-    <div class="row justify-center q-mt-sm">
-      <q-toggle
-        label="Production"
-        v-model="productionModeToggle"
-        color="grey-9"
-        keep-color
-      />
-    </div>
-    <q-dialog v-model="terminarProcessDialog">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Alert</div>
-        </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <div id="terminal" style="background-color: black"></div>
+    <ProductionBase />
+
+    <q-dialog v-model="terminarProcessDialog" persistent>
+      <q-card style="max-width: 90vw" class="bg-black">
+        <q-card-section class="row items-center q-pb-sm text-white">
+          <div class="text-h6">Terminal</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-separator dark />
+        <q-card-section class="q-pt-sm">
+          <div
+            id="terminal"
+            style="background-color: black; overflow: hidden; overflow-y: auto"
+          ></div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -122,13 +124,16 @@
 import { defineComponent, ref } from "vue";
 import { Notify } from "quasar";
 import { Terminal } from "xterm";
+import ProductionBase from "components/ProductionBase.vue";
 export default defineComponent({
   name: "IndexPage",
+  components: {
+    ProductionBase,
+  },
   data() {
     return {
       website_input: "",
       selectedImages: [],
-      productionModeToggle: false,
       terminarProcessDialog: false,
     };
   },
@@ -140,14 +145,7 @@ export default defineComponent({
       }
       this.terminarProcessDialog = true;
       setTimeout(() => {
-        var term = new Terminal({
-          theme: {
-            background: "#00ff00",
-            selectionInactiveBackground: "#00ff00",
-            selectionBackground: "#00ff00",
-            foreground: "#ff0000",
-          },
-        });
+        var term = new Terminal();
         term.open(document.getElementById("terminal"));
         term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
       }, 500);
