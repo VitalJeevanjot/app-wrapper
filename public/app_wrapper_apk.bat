@@ -1,1 +1,11 @@
-@REM set "NODE_PATH=C:\Users\User\Downloads\node-v20.10.0-win-x64\node-v20.10.0-win-x64"
+call npx capacitor-assets generate
+@REM call npx cap sync
+call npx cap run android
+
+
+@REM cd android
+@REM call gradlew.bat assembleDebug
+echo "DONE OFF...."
+cd ..
+
+

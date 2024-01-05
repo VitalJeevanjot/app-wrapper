@@ -161,8 +161,11 @@ export default defineComponent({
 
         let _commands_to_run = await window.AppWrapperAPI.getBuildCommands();
         console.log(_commands_to_run);
+        await window.AppWrapperAPI.setupPathsBatchFile();
         for (let i = 0; i < _commands_to_run.length; i++) {
-          await window.AppWrapperAPI.runBatchFile(_commands_to_run[i]);
+          if (_commands_to_run[i].trim().length > 1) {
+            await window.AppWrapperAPI.runBatchFile(_commands_to_run[i]);
+          }
         }
       }, 500);
       // await window.AppWrapperAPI.setupIcons(

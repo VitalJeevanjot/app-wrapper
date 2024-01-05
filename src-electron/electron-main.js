@@ -3,7 +3,7 @@ const { exec, spawn } = require("node:child_process");
 const fs = require("node:fs");
 import path from "path";
 import os from "os";
-import { execSync } from "child_process";
+import { execSync, spawnSync } from "child_process";
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -89,6 +89,7 @@ app.whenReady().then(() => {
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
   ipcMain.handle("get-build-commands", getBuildCommands);
+  ipcMain.handle("setup-paths-batch-file", setupPathsBatchFile);
   createWindow();
 });
 
@@ -177,23 +178,28 @@ function setupIconsForBuild(event, _paths) {
     }
   }
 }
-var file_path = `${path.join(
-  path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-  "app_wrapper_apk.bat"
-)}`;
+
+function setupPathsBatchFile() {
+  var file_path = `${path.join(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+    "path_setup.bat"
+  )}`;
+  const bat = spawn("cmd.exe", ["/c", `${file_path}`]);
+  console.log(bat);
+}
 
 function getBuildCommands() {
+  var wrapper_file_path = `${path.join(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+    "app_wrapper_apk.bat"
+  )}`;
   var file_content_splitted = fs
-    .readFileSync(file_path, { encoding: "utf-8" })
+    .readFileSync(wrapper_file_path, { encoding: "utf-8" })
     .split("\n");
   return file_content_splitted;
 }
 
 async function runScript(e, _command) {
-  var file_path = `${path.join(
-    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "app_wrapper_apk.bat"
-  )}`;
   // console.log(file_path);
   // exec(file_path, (err, stdout, stderr) => {
   //   if (err) {
@@ -202,12 +208,14 @@ async function runScript(e, _command) {
   //   }
   //   console.log(stdout);
   // });
-  console.log(file_path);
+  // console.log(file_path);
   console.log(_command);
   console.log("printing output....");
-  const ls_out = execSync(`${_command}`);
+  const paths_out = spawnSync(`${_command}`);
+  // console.log(paths);
+  // const ls_out = execSync(`${_command}`);
   // const ls_err = execSync(`${_command.stderr}`);
-  console.log(ls_out.toString());
+  console.log(paths_out.toString());
   // console.log(ls_err);
   // ls.stdin.on("data", (data) => {
   //   console.log(`stdin: ${data}`);

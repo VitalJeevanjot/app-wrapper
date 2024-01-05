@@ -48,4 +48,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getBuildCommands: () => {
     return ipcRenderer.invoke("get-build-commands");
   },
+  setupPathsBatchFile: () => {
+    return ipcRenderer.invoke("setup-paths-batch-file");
+  },
 });
