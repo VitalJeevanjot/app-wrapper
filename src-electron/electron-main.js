@@ -3,6 +3,7 @@ const { exec, spawn } = require("node:child_process");
 const fs = require("node:fs");
 import path from "path";
 import os from "os";
+import { execSync } from "child_process";
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -50,6 +51,7 @@ function createWindow() {
   /**
    * Initial window options
    */
+  // console.log(process.env.QUASAR_NODE_INTEGRATION);
   mainWindow = new BrowserWindow({
     icon: path.resolve(__dirname, "icons/icon.png"), // tray icon
     autoHideMenuBar: true,
@@ -86,6 +88,7 @@ app.whenReady().then(() => {
   ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
+  ipcMain.handle("get-build-commands", getBuildCommands);
   createWindow();
 });
 
@@ -174,8 +177,19 @@ function setupIconsForBuild(event, _paths) {
     }
   }
 }
+var file_path = `${path.join(
+  path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+  "app_wrapper_apk.bat"
+)}`;
 
-async function runScript(e) {
+function getBuildCommands() {
+  var file_content_splitted = fs
+    .readFileSync(file_path, { encoding: "utf-8" })
+    .split("\n");
+  return file_content_splitted;
+}
+
+async function runScript(e, _command) {
   var file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "app_wrapper_apk.bat"
@@ -189,26 +203,35 @@ async function runScript(e) {
   //   console.log(stdout);
   // });
   console.log(file_path);
-  const ls = spawn("cmd.exe", ["/c", file_path]);
+  console.log(_command);
+  console.log("printing output....");
+  const ls_out = execSync(`${_command}`);
+  // const ls_err = execSync(`${_command.stderr}`);
+  console.log(ls_out.toString());
+  // console.log(ls_err);
   // ls.stdin.on("data", (data) => {
   //   console.log(`stdin: ${data}`);
   // });
   // userInput = "\x1B[A"; // UP Arrow
   // userInput = "\x1B[B"; // Down Arrow
-  userInput = "\x0D"; // Carriage return
-  ls.stdin.write(userInput);
-  ls.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`);
-    // if (data.includes("Please choose a target device")) {
-    //   console.log("ASKING NOW");
-    //   userInput = "\x1B[A";
-    //   ls.stdin.write(userInput);
-    // }
-  });
-  ls.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`);
-  });
-  ls.on("close", (code) => {
-    console.log(`child process exited with code ${code}`);
-  });
+  // userInput = "\x0D"; // Carriage return
+
+  // ls.stdin.write(userInput);
+
+  // ls.stdout.on("data", (data) => {
+  //   let _data = "$ " + data;
+  //   console.log(_data);
+  //   mainWindow.webContents.send("terminal_output", _data);
+  //   // if (data.includes("Please choose a target device")) {
+  //   //   console.log("ASKING NOW");
+  //   //   userInput = "\x1B[A";
+  //   //   ls.stdin.write(userInput);
+  //   // }
+  // });
+  // ls.stderr.on("data", (data) => {
+  //   console.error(`stderr: ${data}`);
+  // });
+  // ls.on("close", (code) => {
+  //   console.log(`child process exited with code ${code}`);
+  // });
 }

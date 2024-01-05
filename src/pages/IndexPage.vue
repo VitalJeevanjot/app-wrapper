@@ -125,6 +125,7 @@ import { defineComponent, ref } from "vue";
 import { Notify } from "quasar";
 import { Terminal } from "xterm";
 import ProductionBase from "components/ProductionBase.vue";
+
 export default defineComponent({
   name: "IndexPage",
   components: {
@@ -135,19 +136,34 @@ export default defineComponent({
       website_input: "",
       selectedImages: [],
       terminalProcessDialog: false,
+      terminalInstance: null,
     };
   },
   methods: {
     async createBuildFromURL() {
+      let channel = "terminal_output";
+
+      // window.electron_ipcRenderer.removeAllListeners(channel);
+      // window.electron_ipcRenderer.on(channel, (event, message) => {
+      //   if (terminalInstance) {
+      //     terminalInstance.write(message);
+      //   }
+      // });
       if (!this.website_input) {
         Notify.create({ message: "⚠️ Website URL required", color: "black" });
         return;
       }
       this.terminalProcessDialog = true;
-      setTimeout(() => {
-        var term = new Terminal();
-        term.open(document.getElementById("terminal"));
-        term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
+      setTimeout(async () => {
+        this.terminalInstance = new Terminal();
+        this.terminalInstance.open(document.getElementById("terminal"));
+        this.terminalInstance.write("$");
+
+        let _commands_to_run = await window.AppWrapperAPI.getBuildCommands();
+        console.log(_commands_to_run);
+        for (let i = 0; i < _commands_to_run.length; i++) {
+          await window.AppWrapperAPI.runBatchFile(_commands_to_run[i]);
+        }
       }, 500);
       // await window.AppWrapperAPI.setupIcons(
       //   JSON.stringify(this.selectedImages)

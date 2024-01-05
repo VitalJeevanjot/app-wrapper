@@ -30,8 +30,8 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("AppWrapperAPI", {
-  runBatchFile: async () => {
-    return await ipcRenderer.invoke("run-script");
+  runBatchFile: async (command) => {
+    return await ipcRenderer.invoke("run-script", command);
   },
   getPublicFolderPath: () => {
     return ipcRenderer.invoke("get-public-path");
@@ -44,5 +44,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   },
   selectAndShowImage: () => {
     return ipcRenderer.invoke("select-and-show-IMG");
+  },
+  getBuildCommands: () => {
+    return ipcRenderer.invoke("get-build-commands");
   },
 });
