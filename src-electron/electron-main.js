@@ -184,7 +184,7 @@ function setupPathsBatchFile() {
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "path_setup.bat"
   )}`;
-  const bat = spawn("cmd.exe", ["/c", `${file_path}`]);
+  const bat = spawnSync("cmd.exe", ["/c", `${file_path}`]);
   console.log(bat);
 }
 
@@ -211,9 +211,9 @@ async function runScript(e, _command) {
   // console.log(file_path);
   console.log(_command);
   console.log("printing output....");
-  const paths_out = spawnSync(`${_command}`);
+  // const paths_out = spawnSync(`${_command}`);
   // console.log(paths);
-  // const ls_out = execSync(`${_command}`);
+  const paths_out = execSync(`${_command}`);
   // const ls_err = execSync(`${_command.stderr}`);
   console.log(paths_out.toString());
   // console.log(ls_err);
