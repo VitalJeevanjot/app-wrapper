@@ -80,7 +80,7 @@
 
     <ProductionBase />
 
-    <q-dialog v-model="terminarProcessDialog" persistent>
+    <q-dialog v-model="terminalProcessDialog" persistent>
       <q-card style="max-width: 90vw" class="bg-black">
         <q-card-section class="row items-center q-pb-sm text-white">
           <div class="text-h6">Terminal</div>
@@ -134,7 +134,7 @@ export default defineComponent({
     return {
       website_input: "",
       selectedImages: [],
-      terminarProcessDialog: false,
+      terminalProcessDialog: false,
     };
   },
   methods: {
@@ -143,7 +143,7 @@ export default defineComponent({
         Notify.create({ message: "⚠️ Website URL required", color: "black" });
         return;
       }
-      this.terminarProcessDialog = true;
+      this.terminalProcessDialog = true;
       setTimeout(() => {
         var term = new Terminal();
         term.open(document.getElementById("terminal"));
