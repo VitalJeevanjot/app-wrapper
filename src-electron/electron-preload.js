@@ -30,7 +30,7 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("AppWrapperAPI", {
-  runBatchFile: async (command) => {
+  runScriptFile: async (command) => {
     return await ipcRenderer.invoke("run-script", command);
   },
   getPublicFolderPath: () => {
@@ -50,5 +50,11 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   },
   setupPathsBatchFile: () => {
     return ipcRenderer.invoke("setup-paths-batch-file");
+  },
+  runAssetsScript: () => {
+    return ipcRenderer.invoke("run-assets-script");
+  },
+  getOutputForTerminal: () => {
+    return ipcRenderer.invoke("get-output-from-terminal");
   },
 });

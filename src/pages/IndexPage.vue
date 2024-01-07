@@ -89,10 +89,7 @@
         </q-card-section>
         <q-separator dark />
         <q-card-section class="q-pt-sm">
-          <div
-            id="terminal"
-            style="background-color: black; overflow: hidden; overflow-y: auto"
-          ></div>
+          <div id="terminal"></div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -108,6 +105,12 @@
   </q-page>
 </template>
 
+<style>
+.xterm .xterm-screen {
+  margin-right: 20px;
+}
+</style>
+
 <style scoped>
 .container {
   position: relative;
@@ -117,6 +120,13 @@
   position: absolute;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
+}
+
+#terminal {
+  /* Align the viewport to the bottom of the panel, just like the terminal */
+  background-color: black;
+  /* overflow: hidden;
+  overflow-y: auto; */
 }
 </style>
 
@@ -154,20 +164,26 @@ export default defineComponent({
         return;
       }
       this.terminalProcessDialog = true;
-      setTimeout(async () => {
-        this.terminalInstance = new Terminal();
-        this.terminalInstance.open(document.getElementById("terminal"));
-        this.terminalInstance.write("$");
-
-        let _commands_to_run = await window.AppWrapperAPI.getBuildCommands();
-        console.log(_commands_to_run);
-        await window.AppWrapperAPI.setupPathsBatchFile();
-        for (let i = 0; i < _commands_to_run.length; i++) {
-          if (_commands_to_run[i].trim().length > 1) {
-            await window.AppWrapperAPI.runBatchFile(_commands_to_run[i]);
-          }
+      await window.AppWrapperAPI.runAssetsScript();
+      this.terminalInstance = new Terminal();
+      this.terminalInstance.open(document.getElementById("terminal"));
+      var terminal_output = setInterval(async () => {
+        var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
+        console.log(getStdout);
+        if (getStdout && getStdout?.includes("process exited with code")) {
+          clearInterval(terminal_output);
         }
-      }, 500);
+        getStdout = getStdout?.replace("null", "");
+        this.terminalInstance.write("$ " + getStdout);
+
+        // console.log(_commands_to_run);
+        // for (let i = 0; i < _commands_to_run.length; i++) {
+        //   // console.log(_commands_to_run[i].trim().length);
+        //   if (_commands_to_run[i].trim().length > 1) {
+        //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
+        //   }
+        // }
+      }, 1000);
       // await window.AppWrapperAPI.setupIcons(
       //   JSON.stringify(this.selectedImages)
       // );

@@ -82,18 +82,26 @@ function createWindow() {
   });
 }
 
+var terminal_logs = null;
+var bat = null;
 app.whenReady().then(() => {
+  // setupTerminalInstanceAndPathsBatchFile();
   ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
   ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
   ipcMain.handle("get-build-commands", getBuildCommands);
-  ipcMain.handle("setup-paths-batch-file", setupPathsBatchFile);
+  ipcMain.handle("run-assets-script", runAssetsScript);
+  ipcMain.handle("get-output-from-terminal", getOutputForTerminal);
   createWindow();
 });
 
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
+  console.log("ENDING TERMINAL PROCESS>>>");
+  await bat.stdin.end();
+  await bat.stdout.end();
+  await bat.kill();
   if (platform !== "darwin") {
     app.quit();
   }
@@ -125,7 +133,6 @@ async function buildAppFromURL(e, url) {
       }
     }
   );
-  runScript();
 }
 
 async function selectAndShowIMG(event) {
@@ -178,15 +185,43 @@ function setupIconsForBuild(event, _paths) {
     }
   }
 }
+// var bat = null;
+// var paths_setup = false;
+// var paths_setup_error = null;
+// var file_path = `${path.join(
+//   path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+//   "path_setup.bat"
+// )}`;
+// bat = spawn(file_path, { stdio: "overlapped", detached: true });
+// bat.stdin.on("data", (data) => {
+//   console.log(`stdin: ${data}`);
+// });
 
-function setupPathsBatchFile() {
-  var file_path = `${path.join(
-    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "path_setup.bat"
-  )}`;
-  const bat = spawnSync("cmd.exe", ["/c", `${file_path}`]);
-  console.log(bat);
-}
+// bat.on("close", (code) => {
+//   console.log(`bat process exited with code ${code}`);
+//   if (code !== 0) {
+//     console.log(`bat process exited with code ${code}`);
+//   }
+// });
+
+// bat.stdout.on("data", (data) => {
+//   console.log(`stdout: ${data}`);
+//   if (data.includes("DONE ON....")) {
+//     // console.log("setting up path..--..");
+//     paths_setup = true;
+//   }
+// });
+// bat.stderr.on("data", (data) => {
+//   paths_setup = false;
+//   paths_setup_error = data;
+// });
+
+// setTimeout(() => {
+//   console.log("after timeout");
+//   bat.stdin.write("dir");
+// }, 5000);
+
+// function setupTerminalInstanceAndPathsBatchFile() {}
 
 function getBuildCommands() {
   var wrapper_file_path = `${path.join(
@@ -197,6 +232,36 @@ function getBuildCommands() {
     .readFileSync(wrapper_file_path, { encoding: "utf-8" })
     .split("\n");
   return file_content_splitted;
+}
+
+async function getOutputForTerminal() {
+  let output = terminal_logs;
+  terminal_logs = null;
+  return output;
+}
+
+async function runAssetsScript() {
+  var assets_process_file_path = `${path.join(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+    "app_assets_process.bat"
+  )}`;
+  bat = spawn(assets_process_file_path);
+  terminal_logs = null;
+
+  bat.stdout.on("data", (data) => {
+    console.log(`${data.toString()}`);
+    terminal_logs += `\n${data.toString()}`;
+  });
+  bat.stderr.on("data", (data) => {
+    console.log(data.toString());
+    terminal_logs += `\n${data.toString()}`;
+  });
+
+  bat.on("close", (code) => {
+    var _exit_message = `process exited with code ${code}`;
+    terminal_logs += `\n${_exit_message.toString()}`;
+    console.log(_exit_message);
+  });
 }
 
 async function runScript(e, _command) {
@@ -210,12 +275,22 @@ async function runScript(e, _command) {
   // });
   // console.log(file_path);
   console.log(_command);
-  console.log("printing output....");
+  // console.log("printing output....");
   // const paths_out = spawnSync(`${_command}`);
   // console.log(paths);
-  const paths_out = execSync(`${_command}`);
+  // const paths_out = execSync(`${_command}`);
+  // console.log("get value of bat //////////////");
+  // console.log(bat.stdin.write("ls\n"));
+  bat.stdin.write("dir\x0D");
+  // const { stdout, stderr } = await bat.stdin.write(`${_command}`);
+  // console.log("STD_OUTPUT--------------------");
+  // console.log(stdout);
+
+  // console.log("STD_ERROR--------------------");
+  // console.log(stderr);
   // const ls_err = execSync(`${_command.stderr}`);
-  console.log(paths_out.toString());
+  // console.log(paths_out.stdout.toString());
+  // console.log(paths_out.stderr.toString());
   // console.log(ls_err);
   // ls.stdin.on("data", (data) => {
   //   console.log(`stdin: ${data}`);

@@ -22,7 +22,7 @@ set "ANDROID_SDK_ROOT=%cd%\commandlinetools-win-10406996_latest"
 @REM  sdkmanager.bat "build-tools;34.0.0"
 @REM  sdkmanager.bat "platforms;android-33"
 
-echo "DONE ON...."
-
 call node -v
 cd capacitor_config
+cd
+echo "DONE ON...."
