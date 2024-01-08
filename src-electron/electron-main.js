@@ -236,7 +236,7 @@ function getBuildCommands() {
 
 async function getOutputForTerminal() {
   let output = terminal_logs;
-  terminal_logs = null;
+  terminal_logs = "\r\n";
   return output;
 }
 
@@ -249,18 +249,27 @@ async function runAssetsScript() {
   terminal_logs = null;
 
   bat.stdout.on("data", (data) => {
-    console.log(`${data.toString()}`);
-    terminal_logs += `\n${data.toString()}`;
+    // console.log(`${data.toString()}`);
+    // console.log(data.toString().indexOf("png"));
+    // console.log(data.toString().split(/\n/g));
+    // console.log(
+    //   data.toString().charCodeAt(data.toString().indexOf("png") + 14)
+    // );
+    // console.log("================================");
+    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
   });
   bat.stderr.on("data", (data) => {
-    console.log(data.toString());
-    terminal_logs += `\n${data.toString()}`;
+    // console.log(data.toString());
+    // console.log(data.toString().charCodeAt(data.length - 1));
+    // console.log("--------------------------------------------------------");
+    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
   });
 
   bat.on("close", (code) => {
-    var _exit_message = `process exited with code ${code}`;
-    terminal_logs += `\n${_exit_message.toString()}`;
-    console.log(_exit_message);
+    var _exit_message = `\r\nprocess exited with code ${code}`;
+    terminal_logs += `${_exit_message.toString()}`;
+    // console.log("________________________________________________");
+    // console.log(_exit_message);
   });
 }
 

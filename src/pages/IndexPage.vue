@@ -167,14 +167,19 @@ export default defineComponent({
       await window.AppWrapperAPI.runAssetsScript();
       this.terminalInstance = new Terminal();
       this.terminalInstance.open(document.getElementById("terminal"));
+      await window.AppWrapperAPI.setupIcons(
+        JSON.stringify(this.selectedImages)
+      );
       var terminal_output = setInterval(async () => {
         var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
         console.log(getStdout);
         if (getStdout && getStdout?.includes("process exited with code")) {
           clearInterval(terminal_output);
         }
-        getStdout = getStdout?.replace("null", "");
-        this.terminalInstance.write("$ " + getStdout);
+        getStdout = getStdout?.replace("null", ".");
+        getStdout = getStdout?.replace("undefined", ".");
+        // getStdout = getStdout?.replace("\n", "");
+        this.terminalInstance.write(getStdout);
 
         // console.log(_commands_to_run);
         // for (let i = 0; i < _commands_to_run.length; i++) {
@@ -184,9 +189,6 @@ export default defineComponent({
         //   }
         // }
       }, 1000);
-      // await window.AppWrapperAPI.setupIcons(
-      //   JSON.stringify(this.selectedImages)
-      // );
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
