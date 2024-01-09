@@ -58,6 +58,12 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
     return ipcRenderer.invoke("get-output-from-terminal");
   },
   sendKeyToTerminal: (escapeCode) => {
-    return ipcRenderer.invoke("send-input-to-terminal", escapeCode);
+    ipcRenderer.invoke("send-input-to-terminal", escapeCode);
+  },
+  openAndroidManifest: () => {
+    ipcRenderer.invoke("open-android-manifest");
+  },
+  killTerminalProcess: () => {
+    ipcRenderer.invoke("kill-terminal-process");
   },
 });

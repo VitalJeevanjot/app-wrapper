@@ -36,4 +36,4 @@ call npx cap run android
 @REM call gradlew.bat assembleDebug
 @REM echo "DONE OFF...."
 @REM cd ..
-echo "DONE-END...."
+echo "DONE...."

@@ -1,4 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog, nativeImage } from "electron";
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  nativeImage,
+  shell,
+} from "electron";
 const { exec, spawn } = require("node:child_process");
 const fs = require("node:fs");
 import path from "path";
@@ -10,7 +17,7 @@ const platform = process.platform || os.platform();
 
 let mainWindow;
 
-var height, width, src_url, iframe_style;
+var appId;
 
 function getContent() {
   return `<!DOCTYPE html>
@@ -45,6 +52,18 @@ function getContent() {
   </script>
 </html>
   `;
+}
+
+function getConfigWithAppId() {
+  return `{
+  "appId": "${appid}",
+  "appName": "capacitor_config",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
+`;
 }
 
 function createWindow() {
@@ -95,6 +114,8 @@ app.whenReady().then(() => {
   ipcMain.handle("run-assets-script", runAssetsScript);
   ipcMain.handle("get-output-from-terminal", getOutputForTerminal);
   ipcMain.handle("send-input-to-terminal", sendInputToTerminal);
+  ipcMain.handle("open-android-manifest", openAndroidManifest);
+  ipcMain.handle("kill-terminal-process", killTerminalProcess);
   createWindow();
 });
 
@@ -113,6 +134,17 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+function killTerminalProcess() {
+  if (bat) {
+    bat.kill();
+  }
+}
+
+function writeCordovaConfig(app_id) {
+  appId = app_id;
+  getConfigWithAppId();
+}
 
 function getPublicPath() {
   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
@@ -198,6 +230,21 @@ function getBuildCommands() {
   return file_content_splitted;
 }
 
+async function openAndroidManifest() {
+  await shell.openPath(
+    path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      "capacitor_config",
+      "android",
+      "app",
+      "src",
+      "main",
+      "AndroidManifest.xml"
+    )
+  );
+}
+
 async function getOutputForTerminal() {
   let output = terminal_logs;
   terminal_logs = "\r\n";
@@ -230,7 +277,11 @@ async function runAssetsScript() {
   });
 
   bat.on("close", (code) => {
-    var _exit_message = `\r\nprocess exited with code ${code}`;
+    if (!code) {
+      var _exit_message = `\r\nprocess exited with code "x"`;
+    } else {
+      var _exit_message = `\r\nprocess exited with code ${code}`;
+    }
     terminal_logs += `${_exit_message.toString()}`;
     // console.log("________________________________________________");
     // console.log(_exit_message);

@@ -85,7 +85,7 @@
         <q-card-section class="row items-center q-pb-sm text-white">
           <div class="text-h6">Terminal</div>
           <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn icon="close" flat round dense @click="closeTerminal" />
         </q-card-section>
         <q-separator dark />
         <q-card-section class="q-pt-sm">
@@ -97,7 +97,17 @@
       <q-btn
         rounded
         flat
-        class="bg-grey-3 text-black"
+        class="text-white q-ml-sm bg-red-9"
+        @click="openAndroidManifest"
+        icon="edit"
+        >Android Manifest</q-btn
+      >
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-btn
+        rounded
+        flat
+        class="bg-purple text-white"
         @click="createBuildFromURL"
         >Build</q-btn
       >
@@ -150,6 +160,10 @@ export default defineComponent({
     };
   },
   methods: {
+    async closeTerminal() {
+      await window.AppWrapperAPI.killTerminalProcess();
+      this.terminalProcessDialog = false;
+    },
     sendKeyToTerminal(e) {
       if (e.code == "ArrowUp") {
         window.AppWrapperAPI.sendKeyToTerminal("\x1B[A");
@@ -159,9 +173,10 @@ export default defineComponent({
         window.AppWrapperAPI.sendKeyToTerminal("\x0D");
       }
     },
+    openAndroidManifest() {
+      window.AppWrapperAPI.openAndroidManifest();
+    },
     async createBuildFromURL() {
-      document.addEventListener("keyup", this.sendKeyToTerminal);
-
       // window.electron_ipcRenderer.removeAllListeners(channel);
       // window.electron_ipcRenderer.on(channel, (event, message) => {
       //   if (terminalInstance) {
@@ -176,6 +191,7 @@ export default defineComponent({
       await window.AppWrapperAPI.setupIcons(
         JSON.stringify(this.selectedImages)
       );
+      document.addEventListener("keyup", this.sendKeyToTerminal);
       await window.AppWrapperAPI.runAssetsScript();
       this.terminalInstance = new Terminal();
       this.terminalInstance.open(document.getElementById("terminal"));
@@ -184,7 +200,6 @@ export default defineComponent({
         console.log(getStdout.charAt(0));
         if (getStdout && getStdout?.includes("process exited with code")) {
           clearInterval(terminal_output);
-          console.log("Ending.............---------------");
           document.removeEventListener("keyup", this.sendKeyToTerminal);
         }
         if (getStdout.trim()) {
@@ -199,7 +214,7 @@ export default defineComponent({
         //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
         //   }
         // }
-      }, 1000);
+      }, 100);
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
