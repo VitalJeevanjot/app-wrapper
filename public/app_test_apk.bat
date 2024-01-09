@@ -29,11 +29,11 @@ cd
 cd
 call npx capacitor-assets generate
 @REM @REM call npx cap sync
-@REM call npx cap run android
+call npx cap run android
 
 
-@REM @REM cd android
-@REM @REM call gradlew.bat assembleDebug
+@REM cd android
+@REM call gradlew.bat assembleDebug
 @REM echo "DONE OFF...."
 @REM cd ..
-@REM echo "DONE-END...."
+echo "DONE-END...."

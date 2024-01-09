@@ -150,8 +150,17 @@ export default defineComponent({
     };
   },
   methods: {
+    sendKeyToTerminal(e) {
+      if (e.code == "ArrowUp") {
+        window.AppWrapperAPI.sendKeyToTerminal("\x1B[A");
+      } else if (e.code == "ArrowDown") {
+        window.AppWrapperAPI.sendKeyToTerminal("\x1B[B");
+      } else if (e.code == "Enter") {
+        window.AppWrapperAPI.sendKeyToTerminal("\x0D");
+      }
+    },
     async createBuildFromURL() {
-      let channel = "terminal_output";
+      document.addEventListener("keyup", this.sendKeyToTerminal);
 
       // window.electron_ipcRenderer.removeAllListeners(channel);
       // window.electron_ipcRenderer.on(channel, (event, message) => {
@@ -164,22 +173,24 @@ export default defineComponent({
         return;
       }
       this.terminalProcessDialog = true;
-      await window.AppWrapperAPI.runAssetsScript();
-      this.terminalInstance = new Terminal();
-      this.terminalInstance.open(document.getElementById("terminal"));
       await window.AppWrapperAPI.setupIcons(
         JSON.stringify(this.selectedImages)
       );
+      await window.AppWrapperAPI.runAssetsScript();
+      this.terminalInstance = new Terminal();
+      this.terminalInstance.open(document.getElementById("terminal"));
       var terminal_output = setInterval(async () => {
         var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
-        console.log(getStdout);
+        console.log(getStdout.charAt(0));
         if (getStdout && getStdout?.includes("process exited with code")) {
           clearInterval(terminal_output);
+          console.log("Ending.............---------------");
+          document.removeEventListener("keyup", this.sendKeyToTerminal);
         }
-        getStdout = getStdout?.replace("null", ".");
-        getStdout = getStdout?.replace("undefined", ".");
+        if (getStdout.trim()) {
+          this.terminalInstance.write(getStdout);
+        }
         // getStdout = getStdout?.replace("\n", "");
-        this.terminalInstance.write(getStdout);
 
         // console.log(_commands_to_run);
         // for (let i = 0; i < _commands_to_run.length; i++) {

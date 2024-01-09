@@ -57,4 +57,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getOutputForTerminal: () => {
     return ipcRenderer.invoke("get-output-from-terminal");
   },
+  sendKeyToTerminal: (escapeCode) => {
+    return ipcRenderer.invoke("send-input-to-terminal", escapeCode);
+  },
 });

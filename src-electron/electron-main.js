@@ -94,6 +94,7 @@ app.whenReady().then(() => {
   ipcMain.handle("get-build-commands", getBuildCommands);
   ipcMain.handle("run-assets-script", runAssetsScript);
   ipcMain.handle("get-output-from-terminal", getOutputForTerminal);
+  ipcMain.handle("send-input-to-terminal", sendInputToTerminal);
   createWindow();
 });
 
@@ -185,48 +186,11 @@ function setupIconsForBuild(event, _paths) {
     }
   }
 }
-// var bat = null;
-// var paths_setup = false;
-// var paths_setup_error = null;
-// var file_path = `${path.join(
-//   path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-//   "path_setup.bat"
-// )}`;
-// bat = spawn(file_path, { stdio: "overlapped", detached: true });
-// bat.stdin.on("data", (data) => {
-//   console.log(`stdin: ${data}`);
-// });
-
-// bat.on("close", (code) => {
-//   console.log(`bat process exited with code ${code}`);
-//   if (code !== 0) {
-//     console.log(`bat process exited with code ${code}`);
-//   }
-// });
-
-// bat.stdout.on("data", (data) => {
-//   console.log(`stdout: ${data}`);
-//   if (data.includes("DONE ON....")) {
-//     // console.log("setting up path..--..");
-//     paths_setup = true;
-//   }
-// });
-// bat.stderr.on("data", (data) => {
-//   paths_setup = false;
-//   paths_setup_error = data;
-// });
-
-// setTimeout(() => {
-//   console.log("after timeout");
-//   bat.stdin.write("dir");
-// }, 5000);
-
-// function setupTerminalInstanceAndPathsBatchFile() {}
 
 function getBuildCommands() {
   var wrapper_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "app_wrapper_apk.bat"
+    "app_wrap_apk.bat"
   )}`;
   var file_content_splitted = fs
     .readFileSync(wrapper_file_path, { encoding: "utf-8" })
@@ -243,7 +207,7 @@ async function getOutputForTerminal() {
 async function runAssetsScript() {
   var assets_process_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "app_assets_process.bat"
+    "app_wrap_apk.bat"
   )}`;
   bat = spawn(assets_process_file_path);
   terminal_logs = null;
@@ -273,6 +237,12 @@ async function runAssetsScript() {
   });
 }
 
+function sendInputToTerminal(event, escapeCode) {
+  console.log("escapeCode: ");
+  console.log(escapeCode);
+  bat.stdin.write(escapeCode);
+}
+
 async function runScript(e, _command) {
   // console.log(file_path);
   // exec(file_path, (err, stdout, stderr) => {
@@ -290,7 +260,7 @@ async function runScript(e, _command) {
   // const paths_out = execSync(`${_command}`);
   // console.log("get value of bat //////////////");
   // console.log(bat.stdin.write("ls\n"));
-  bat.stdin.write("dir\x0D");
+  // bat.stdin.write("dir\x0D");
   // const { stdout, stderr } = await bat.stdin.write(`${_command}`);
   // console.log("STD_OUTPUT--------------------");
   // console.log(stdout);
