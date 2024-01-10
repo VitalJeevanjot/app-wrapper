@@ -97,10 +97,18 @@
       <q-btn
         rounded
         flat
-        class="text-white q-ml-sm bg-red-9"
+        class="text-black q-ml-sm bg-grey-3"
         @click="openAndroidManifest"
         icon="edit"
         >Android Manifest</q-btn
+      >
+      <q-btn
+        rounded
+        flat
+        class="text-black q-ml-sm bg-grey-3"
+        @click="openAndroidManifest"
+        icon="edit"
+        >Build Gradle</q-btn
       >
     </div>
     <div class="row justify-center q-mt-sm">
