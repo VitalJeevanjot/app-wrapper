@@ -56,7 +56,7 @@ function getConfigWithAppId(appid, use_website, website_URL) {
   return `{
   "appId": "${appid}",
   "appName": "capacitor_config",
-  "webDir": "${use_website ? "www" : website_URL}",
+  "webDir": "${use_website ? "www" : website_URL.replace(/\\/g, "/")}",
   "server": {
     "androidScheme": "https"
   }
