@@ -134,6 +134,7 @@ app.whenReady().then(() => {
   ipcMain.handle("open-android-manifest", openAndroidManifest);
   ipcMain.handle("open-config-folder", openConfigFolder);
   ipcMain.handle("kill-terminal-process", killTerminalProcess);
+  ipcMain.handle("get-output-path", getPathOfOutput);
   createWindow();
 });
 
@@ -161,6 +162,18 @@ function killTerminalProcess() {
 
 function getPublicPath() {
   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+}
+function getPathOfOutput() {
+  return path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER,
+    "capacitor_config",
+    "android",
+    "app",
+    "build",
+    "outputs",
+    "apk"
+  );
 }
 async function editAppFromSettings(website_URL, app_ID, target_sdk_ver) {
   await fs.writeFile(
@@ -297,7 +310,7 @@ async function getOutputForTerminal() {
   return output;
 }
 
-async function runWrappingScript(website_URL, app_ID, target_sdk_ver) {
+async function runWrappingScript(env, website_URL, app_ID, target_sdk_ver) {
   await editAppFromSettings(website_URL, app_ID, target_sdk_ver);
   var wrapping_process_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),

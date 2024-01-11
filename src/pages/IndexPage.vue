@@ -121,22 +121,33 @@
         >Build</q-btn
       >
     </div>
-    <div class="row justify-center q-mt-sm">
+    <div class="row justify-center q-mt-md">
       <q-btn
         rounded
         flat
         class="text-black q-mr-sm bg-grey-3"
         @click="openAndroidManifest"
         icon="edit"
+        style="min-width: 250px; width: 10vw"
         >Android Manifest</q-btn
       >
       <q-btn
         rounded
         flat
-        class="text-black q-ml-sm bg-grey-3"
+        class="text-black q-mx-sm bg-grey-3"
         @click="openConfigFolder"
         icon="folder"
+        style="min-width: 250px; width: 10vw"
         >Config folder</q-btn
+      >
+      <q-btn
+        rounded
+        flat
+        class="text-black q-ml-sm bg-grey-3"
+        @click="fetchAndShowRecentLogs"
+        icon="terminal"
+        style="min-width: 250px; width: 10vw"
+        >Recent logs</q-btn
       >
     </div>
   </q-page>
@@ -169,7 +180,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { Notify } from "quasar";
+import { LocalStorage, Notify } from "quasar";
 import { Terminal } from "xterm";
 import ProductionBase from "components/ProductionBase.vue";
 
@@ -186,11 +197,23 @@ export default defineComponent({
       selectedImages: [],
       terminalProcessDialog: false,
       terminalInstance: null,
+      terminalLogs: null,
     };
   },
   methods: {
+    async fetchAndShowRecentLogs() {
+      let logs = LocalStorage.getItem("terminal_logs");
+      this.terminalProcessDialog = true;
+      // setTimeout()
+      // console.log(logs);
+      setTimeout(() => {
+        this.terminalInstance = new Terminal();
+        this.terminalInstance.open(document.getElementById("terminal"));
+        this.terminalInstance.write(logs);
+      }, 200);
+    },
     async closeTerminal() {
-      await window.AppWrapperAPI.killTerminalProcess();
+      await window.AppWrapperAPI.killTerminalProcess(); // it will only kill if the process exist...
       this.terminalProcessDialog = false;
     },
     sendKeyToTerminal(e) {
@@ -208,7 +231,13 @@ export default defineComponent({
     openConfigFolder() {
       window.AppWrapperAPI.openConfigFolder();
     },
+    writeToTerminal(output) {
+      this.terminalLogs = this.terminalLogs + output;
+      LocalStorage.set("terminal_logs", this.terminalLogs);
+      this.terminalInstance.write(output);
+    },
     async createBuildFromURL() {
+      this.terminalLogs = "";
       if (!this.website_input.trim()) {
         Notify.create({
           message: "⚠️ Website URL required",
@@ -226,37 +255,44 @@ export default defineComponent({
         return;
       }
       this.terminalProcessDialog = true;
-      await window.AppWrapperAPI.setupIcons(
-        JSON.stringify(this.selectedImages)
-      );
-      document.addEventListener("keyup", this.sendKeyToTerminal);
-      await window.AppWrapperAPI.runWrappingScript(
-        this.website_input,
-        this.app_id_input,
-        this.target_sdk_version_input
-      );
-      this.terminalInstance = new Terminal();
-      this.terminalInstance.open(document.getElementById("terminal"));
-      var terminal_output = setInterval(async () => {
-        var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
-        console.log(getStdout.charAt(0));
-        if (getStdout && getStdout?.includes("process exited with code")) {
-          clearInterval(terminal_output);
-          document.removeEventListener("keyup", this.sendKeyToTerminal);
-        }
-        if (getStdout.trim()) {
-          this.terminalInstance.write(getStdout);
-        }
-        // getStdout = getStdout?.replace("\n", "");
+      setTimeout(async () => {
+        await window.AppWrapperAPI.setupIcons(
+          JSON.stringify(this.selectedImages)
+        );
+        document.addEventListener("keyup", this.sendKeyToTerminal);
+        await window.AppWrapperAPI.runWrappingScript(
+          this.website_input,
+          this.app_id_input,
+          this.target_sdk_version_input
+        );
+        this.terminalInstance = new Terminal();
+        this.terminalInstance.open(document.getElementById("terminal"));
+        var terminal_output = setInterval(async () => {
+          var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
+          console.log(getStdout.charAt(0));
+          if (getStdout.trim()) {
+            this.writeToTerminal(getStdout);
+          } else {
+            this.writeToTerminal(".");
+          }
+          if (getStdout && getStdout?.includes("process exited with code")) {
+            clearInterval(terminal_output);
+            document.removeEventListener("keyup", this.sendKeyToTerminal);
+            this.writeToTerminal(
+              "\r\nOutput: " + (await window.AppWrapperAPI.getPathOfOutput())
+            );
+          }
+          // getStdout = getStdout?.replace("\n", "");
 
-        // console.log(_commands_to_run);
-        // for (let i = 0; i < _commands_to_run.length; i++) {
-        //   // console.log(_commands_to_run[i].trim().length);
-        //   if (_commands_to_run[i].trim().length > 1) {
-        //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
-        //   }
-        // }
-      }, 100);
+          // console.log(_commands_to_run);
+          // for (let i = 0; i < _commands_to_run.length; i++) {
+          //   // console.log(_commands_to_run[i].trim().length);
+          //   if (_commands_to_run[i].trim().length > 1) {
+          //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
+          //   }
+          // }
+        }, 100);
+      }, 200);
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
