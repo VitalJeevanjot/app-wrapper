@@ -279,7 +279,8 @@ export default defineComponent({
             clearInterval(terminal_output);
             document.removeEventListener("keyup", this.sendKeyToTerminal);
             this.writeToTerminal(
-              "\r\nOutput: " + (await window.AppWrapperAPI.getPathOfOutput())
+              "\r\nOutput path: " +
+                (await window.AppWrapperAPI.getPathOfOutput())
             );
           }
           // getStdout = getStdout?.replace("\n", "");

@@ -74,7 +74,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   killTerminalProcess: () => {
     ipcRenderer.invoke("kill-terminal-process");
   },
-  getPathOfOutput: () => {
-    ipcRenderer.invoke("get-output-path");
+  getPathOfOutput: async () => {
+    return await ipcRenderer.invoke("get-output-path");
   },
 });
