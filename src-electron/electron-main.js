@@ -17,9 +17,7 @@ const platform = process.platform || os.platform();
 
 let mainWindow;
 
-var appId;
-
-function getContent() {
+function getHTMLwithURL(url) {
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -35,7 +33,7 @@ function getContent() {
       width=""
       frameborder="0"
       id="iframe"
-      src="https://nodejs.org/en/learn/manipulating-files/writing-files-with-nodejs"
+      src="${url}"
       style="pointer-events: auto"
     ></iframe>
   </body>
@@ -54,7 +52,7 @@ function getContent() {
   `;
 }
 
-function getConfigWithAppId() {
+function getConfigWithAppId(appid) {
   return `{
   "appId": "${appid}",
   "appName": "capacitor_config",
@@ -62,6 +60,25 @@ function getConfigWithAppId() {
   "server": {
     "androidScheme": "https"
   }
+}
+`;
+}
+function getVariablesWithTargetSDKver(target_sdk_version) {
+  return `ext {
+    minSdkVersion = 22
+    compileSdkVersion = 33
+    targetSdkVersion = ${target_sdk_version}
+    androidxActivityVersion = '1.7.0'
+    androidxAppCompatVersion = '1.6.1'
+    androidxCoordinatorLayoutVersion = '1.2.0'
+    androidxCoreVersion = '1.10.0'
+    androidxFragmentVersion = '1.5.6'
+    coreSplashScreenVersion = '1.0.0'
+    androidxWebkitVersion = '1.6.1'
+    junitVersion = '4.13.2'
+    androidxJunitVersion = '1.1.5'
+    androidxEspressoCoreVersion = '3.5.1'
+    cordovaAndroidVersion = '10.1.1'
 }
 `;
 }
@@ -107,14 +124,15 @@ app.whenReady().then(() => {
   // setupTerminalInstanceAndPathsBatchFile();
   ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
-  ipcMain.handle("build-app-from-URL", buildAppFromURL);
+  // ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
   ipcMain.handle("get-build-commands", getBuildCommands);
-  ipcMain.handle("run-assets-script", runAssetsScript);
+  ipcMain.handle("run-wrapping-script", runWrappingScript);
   ipcMain.handle("get-output-from-terminal", getOutputForTerminal);
   ipcMain.handle("send-input-to-terminal", sendInputToTerminal);
   ipcMain.handle("open-android-manifest", openAndroidManifest);
+  ipcMain.handle("open-config-folder", openConfigFolder);
   ipcMain.handle("kill-terminal-process", killTerminalProcess);
   createWindow();
 });
@@ -141,17 +159,11 @@ function killTerminalProcess() {
   }
 }
 
-function writeCordovaConfig(app_id) {
-  appId = app_id;
-  getConfigWithAppId();
-}
-
 function getPublicPath() {
   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
 }
-async function buildAppFromURL(e, url) {
-  src_url = url;
-  fs.writeFile(
+async function editAppFromSettings(website_URL, app_ID, target_sdk_ver) {
+  await fs.writeFile(
     path.resolve(
       __dirname,
       process.env.QUASAR_PUBLIC_FOLDER,
@@ -159,7 +171,36 @@ async function buildAppFromURL(e, url) {
       "www",
       "index.html"
     ),
-    getContent(),
+    getHTMLwithURL(website_URL),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  await fs.writeFile(
+    path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      "capacitor_config",
+      "capacitor.config.json"
+    ),
+    getConfigWithAppId(app_ID),
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  await fs.writeFile(
+    path.resolve(
+      __dirname,
+      process.env.QUASAR_PUBLIC_FOLDER,
+      "capacitor_config",
+      "android",
+      "variables.gradle"
+    ),
+    getVariablesWithTargetSDKver(target_sdk_ver),
     (err) => {
       if (err) {
         console.log(err);
@@ -244,6 +285,11 @@ async function openAndroidManifest() {
     )
   );
 }
+async function openConfigFolder() {
+  await shell.openPath(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER)
+  );
+}
 
 async function getOutputForTerminal() {
   let output = terminal_logs;
@@ -251,12 +297,13 @@ async function getOutputForTerminal() {
   return output;
 }
 
-async function runAssetsScript() {
-  var assets_process_file_path = `${path.join(
+async function runWrappingScript(website_URL, app_ID, target_sdk_ver) {
+  await editAppFromSettings(website_URL, app_ID, target_sdk_ver);
+  var wrapping_process_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "app_wrap_apk.bat"
   )}`;
-  bat = spawn(assets_process_file_path);
+  bat = spawn(wrapping_process_file_path);
   terminal_logs = null;
 
   bat.stdout.on("data", (data) => {

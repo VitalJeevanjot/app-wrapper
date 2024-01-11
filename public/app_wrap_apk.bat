@@ -28,7 +28,7 @@ cd
 @REM echo "Printing current path............................"
 cd
 call npx capacitor-assets generate
-@REM @REM call npx cap sync
+call npx cap sync
 @REM call npx cap run android
 
 

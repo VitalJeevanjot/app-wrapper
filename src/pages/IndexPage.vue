@@ -14,6 +14,25 @@
         style="width: 60vw; min-width: 250px"
       />
     </div>
+    <div class="row justify-center q-mt-sm">
+      <q-input
+        outlined
+        v-model="app_id_input"
+        label="Enter app ID (e.g: com.website.app)"
+        color="black"
+        style="width: 60vw; min-width: 250px"
+      />
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-input
+        outlined
+        type="number"
+        v-model="target_sdk_version_input"
+        label="Target sdk version (e.g. 33)"
+        color="black"
+        style="width: 60vw; min-width: 250px"
+      />
+    </div>
     <div class="row justify-center q-mt-md">
       <span class="text-subtitle2"
         >Click on it to upload. Icon files should be at least 1024px x 1024px &
@@ -97,7 +116,16 @@
       <q-btn
         rounded
         flat
-        class="text-black q-ml-sm bg-grey-3"
+        class="bg-purple text-white"
+        @click="createBuildFromURL"
+        >Build</q-btn
+      >
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-btn
+        rounded
+        flat
+        class="text-black q-mr-sm bg-grey-3"
         @click="openAndroidManifest"
         icon="edit"
         >Android Manifest</q-btn
@@ -106,18 +134,9 @@
         rounded
         flat
         class="text-black q-ml-sm bg-grey-3"
-        @click="openAndroidManifest"
-        icon="edit"
-        >Build Gradle</q-btn
-      >
-    </div>
-    <div class="row justify-center q-mt-sm">
-      <q-btn
-        rounded
-        flat
-        class="bg-purple text-white"
-        @click="createBuildFromURL"
-        >Build</q-btn
+        @click="openConfigFolder"
+        icon="folder"
+        >Config folder</q-btn
       >
     </div>
   </q-page>
@@ -162,6 +181,8 @@ export default defineComponent({
   data() {
     return {
       website_input: "",
+      app_id_input: "",
+      target_sdk_version_input: 33,
       selectedImages: [],
       terminalProcessDialog: false,
       terminalInstance: null,
@@ -184,15 +205,24 @@ export default defineComponent({
     openAndroidManifest() {
       window.AppWrapperAPI.openAndroidManifest();
     },
+    openConfigFolder() {
+      window.AppWrapperAPI.openConfigFolder();
+    },
     async createBuildFromURL() {
-      // window.electron_ipcRenderer.removeAllListeners(channel);
-      // window.electron_ipcRenderer.on(channel, (event, message) => {
-      //   if (terminalInstance) {
-      //     terminalInstance.write(message);
-      //   }
-      // });
-      if (!this.website_input) {
-        Notify.create({ message: "⚠️ Website URL required", color: "black" });
+      if (!this.website_input.trim()) {
+        Notify.create({
+          message: "⚠️ Website URL required",
+          color: "black",
+          position: "bottom-right",
+        });
+        return;
+      }
+      if (!this.app_id_input.trim()) {
+        Notify.create({
+          message: "⚠️ App ID required",
+          color: "black",
+          position: "bottom-right",
+        });
         return;
       }
       this.terminalProcessDialog = true;
@@ -200,7 +230,11 @@ export default defineComponent({
         JSON.stringify(this.selectedImages)
       );
       document.addEventListener("keyup", this.sendKeyToTerminal);
-      await window.AppWrapperAPI.runAssetsScript();
+      await window.AppWrapperAPI.runWrappingScript(
+        this.website_input,
+        this.app_id_input,
+        this.target_sdk_version_input
+      );
       this.terminalInstance = new Terminal();
       this.terminalInstance.open(document.getElementById("terminal"));
       var terminal_output = setInterval(async () => {
