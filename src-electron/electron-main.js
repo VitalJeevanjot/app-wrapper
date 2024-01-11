@@ -52,11 +52,11 @@ function getHTMLwithURL(url) {
   `;
 }
 
-function getConfigWithAppId(appid) {
+function getConfigWithAppId(appid, use_website, website_URL) {
   return `{
   "appId": "${appid}",
   "appName": "capacitor_config",
-  "webDir": "www",
+  "webDir": "${use_website ? "www" : website_URL}",
   "server": {
     "androidScheme": "https"
   }
@@ -66,7 +66,7 @@ function getConfigWithAppId(appid) {
 function getVariablesWithTargetSDKver(target_sdk_version) {
   return `ext {
     minSdkVersion = 22
-    compileSdkVersion = 33
+    compileSdkVersion = ${target_sdk_version}
     targetSdkVersion = ${target_sdk_version}
     androidxActivityVersion = '1.7.0'
     androidxAppCompatVersion = '1.6.1'
@@ -175,22 +175,30 @@ function getPathOfOutput() {
     "apk"
   );
 }
-async function editAppFromSettings(website_URL, app_ID, target_sdk_ver) {
-  await fs.writeFile(
-    path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
-      "capacitor_config",
-      "www",
-      "index.html"
-    ),
-    getHTMLwithURL(website_URL),
-    (err) => {
-      if (err) {
-        console.log(err);
+async function editAppFromSettings(
+  website_URL,
+  app_ID,
+  target_sdk_ver,
+  overwrite_settings,
+  use_website
+) {
+  if (use_website) {
+    await fs.writeFile(
+      path.resolve(
+        __dirname,
+        process.env.QUASAR_PUBLIC_FOLDER,
+        "capacitor_config",
+        "www",
+        "index.html"
+      ),
+      getHTMLwithURL(website_URL),
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
       }
-    }
-  );
+    );
+  }
   await fs.writeFile(
     path.resolve(
       __dirname,
@@ -198,28 +206,30 @@ async function editAppFromSettings(website_URL, app_ID, target_sdk_ver) {
       "capacitor_config",
       "capacitor.config.json"
     ),
-    getConfigWithAppId(app_ID),
+    getConfigWithAppId(app_ID, use_website, website_URL),
     (err) => {
       if (err) {
         console.log(err);
       }
     }
   );
-  await fs.writeFile(
-    path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
-      "capacitor_config",
-      "android",
-      "variables.gradle"
-    ),
-    getVariablesWithTargetSDKver(target_sdk_ver),
-    (err) => {
-      if (err) {
-        console.log(err);
+  if (overwrite_settings) {
+    await fs.writeFile(
+      path.resolve(
+        __dirname,
+        process.env.QUASAR_PUBLIC_FOLDER,
+        "capacitor_config",
+        "android",
+        "variables.gradle"
+      ),
+      getVariablesWithTargetSDKver(target_sdk_ver ? target_sdk_ver : 33),
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
       }
-    }
-  );
+    );
+  }
 }
 
 async function selectAndShowIMG(event) {
@@ -310,11 +320,26 @@ async function getOutputForTerminal() {
   return output;
 }
 
-async function runWrappingScript(env, website_URL, app_ID, target_sdk_ver) {
-  await editAppFromSettings(website_URL, app_ID, target_sdk_ver);
+async function runWrappingScript(
+  env,
+  website_URL,
+  app_ID,
+  target_sdk_ver,
+  overwrite_settings,
+  use_website,
+  fortest
+) {
+  await editAppFromSettings(
+    website_URL,
+    app_ID,
+    target_sdk_ver,
+    overwrite_settings,
+    use_website,
+    fortest
+  );
   var wrapping_process_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "app_wrap_apk.bat"
+    fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
   )}`;
   bat = spawn(wrapping_process_file_path);
   terminal_logs = null;

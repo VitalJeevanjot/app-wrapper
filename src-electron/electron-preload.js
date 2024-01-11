@@ -51,12 +51,22 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   setupPathsBatchFile: () => {
     return ipcRenderer.invoke("setup-paths-batch-file");
   },
-  runWrappingScript: (website_URL, app_ID, target_sdk_ver) => {
+  runWrappingScript: (
+    website_URL,
+    app_ID,
+    target_sdk_ver,
+    overwrite_settings,
+    use_website,
+    fortest
+  ) => {
     return ipcRenderer.invoke(
       "run-wrapping-script",
       website_URL,
       app_ID,
-      target_sdk_ver
+      target_sdk_ver,
+      overwrite_settings,
+      use_website,
+      fortest
     );
   },
   getOutputForTerminal: () => {

@@ -5,11 +5,19 @@
       src="~assets/quasar-logo-vertical.svg"
       style="width: 200px; height: 200px"
     > -->
+    <div class="row justify-center q-mt-sm">
+      <q-toggle
+        label="Website URL or Directory Path"
+        v-model="use_website"
+        color="grey-9"
+        keep-color
+      />
+    </div>
     <div class="row justify-center">
       <q-input
         outlined
         v-model="website_input"
-        label="Enter website"
+        :label="`Enter ${use_website ? 'website' : 'directory path in full'}`"
         color="black"
         style="width: 60vw; min-width: 250px"
       />
@@ -31,6 +39,14 @@
         label="Target sdk version (e.g. 33)"
         color="black"
         style="width: 60vw; min-width: 250px"
+      />
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-toggle
+        label="Overwrite target sdk"
+        v-model="overwrite_settings"
+        color="grey-9"
+        keep-color
       />
     </div>
     <div class="row justify-center q-mt-md">
@@ -116,9 +132,16 @@
       <q-btn
         rounded
         flat
-        class="bg-purple text-white"
+        class="bg-purple q-mx-sm text-white"
         @click="createBuildFromURL"
         >Build</q-btn
+      >
+      <q-btn
+        rounded
+        flat
+        class="bg-orange q-mx-sm text-white"
+        @click="createBuildFromURL('fortest')"
+        >Test</q-btn
       >
     </div>
     <div class="row justify-center q-mt-md">
@@ -191,6 +214,7 @@ export default defineComponent({
   },
   data() {
     return {
+      use_website: true,
       website_input: "",
       app_id_input: "",
       target_sdk_version_input: 33,
@@ -198,6 +222,7 @@ export default defineComponent({
       terminalProcessDialog: false,
       terminalInstance: null,
       terminalLogs: null,
+      overwrite_settings: true,
     };
   },
   methods: {
@@ -236,7 +261,7 @@ export default defineComponent({
       LocalStorage.set("terminal_logs", this.terminalLogs);
       this.terminalInstance.write(output);
     },
-    async createBuildFromURL() {
+    async createBuildFromURL(fortest) {
       this.terminalLogs = "";
       if (!this.website_input.trim()) {
         Notify.create({
@@ -263,7 +288,10 @@ export default defineComponent({
         await window.AppWrapperAPI.runWrappingScript(
           this.website_input,
           this.app_id_input,
-          this.target_sdk_version_input
+          this.target_sdk_version_input,
+          this.overwrite_settings,
+          this.use_website,
+          fortest
         );
         this.terminalInstance = new Terminal();
         this.terminalInstance.open(document.getElementById("terminal"));
@@ -278,10 +306,12 @@ export default defineComponent({
           if (getStdout && getStdout?.includes("process exited with code")) {
             clearInterval(terminal_output);
             document.removeEventListener("keyup", this.sendKeyToTerminal);
-            this.writeToTerminal(
-              "\r\nOutput path: " +
-                (await window.AppWrapperAPI.getPathOfOutput())
-            );
+            if (fortest == "fortest") {
+              this.writeToTerminal(
+                "\r\nOutput path: " +
+                  (await window.AppWrapperAPI.getPathOfOutput())
+              );
+            }
           }
           // getStdout = getStdout?.replace("\n", "");
 
