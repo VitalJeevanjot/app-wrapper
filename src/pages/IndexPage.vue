@@ -172,6 +172,15 @@
         style="min-width: 250px; width: 10vw"
         >Recent logs</q-btn
       >
+      <q-btn
+        rounded
+        flat
+        class="text-black q-ml-sm bg-grey-3"
+        @click="getDefaultImageDataAtIndex(null, true)"
+        icon="image"
+        style="min-width: 250px; width: 10vw"
+        >Reset images</q-btn
+      >
     </div>
   </q-page>
 </template>
@@ -332,34 +341,59 @@ export default defineComponent({
         this.selectedImages[_index].data = img_data[0];
         this.selectedImages[_index].path = img_data[1];
       }
+      LocalStorage.set("selectedImages", this.selectedImages);
+    },
+    getDefaultImageDataAtIndex(index, atFull) {
+      var imgData = [
+        {
+          data: "",
+          default_placeholder_text: "Icon Only",
+          path: "",
+        },
+        {
+          data: "",
+          default_placeholder_text: "Icon Foreground",
+          path: "",
+        },
+        {
+          data: "",
+          default_placeholder_text: "Icon Background",
+          path: "",
+        },
+        {
+          data: "",
+          default_placeholder_text: "Splash",
+          path: "",
+        },
+        {
+          data: "",
+          default_placeholder_text: "Splash Dark",
+          path: "",
+        },
+      ];
+      if (atFull) {
+        this.selectedImages = imgData;
+        LocalStorage.set("selectedImages", this.selectedImages);
+      }
+      return imgData[index];
     },
   },
   mounted() {
-    this.selectedImages.push({
-      data: "",
-      default_placeholder_text: "Icon Only",
-      path: "",
-    });
-    this.selectedImages.push({
-      data: "",
-      default_placeholder_text: "Icon Foreground",
-      path: "",
-    });
-    this.selectedImages.push({
-      data: "",
-      default_placeholder_text: "Icon Background",
-      path: "",
-    });
-    this.selectedImages.push({
-      data: "",
-      default_placeholder_text: "Splash",
-      path: "",
-    });
-    this.selectedImages.push({
-      data: "",
-      default_placeholder_text: "Splash Dark",
-      path: "",
-    });
+    this.selectedImages = LocalStorage.getItem("selectedImages");
+    if (!this.selectedImages) {
+      this.selectedImages = [];
+    }
+    for (let i = 0; i < 5; i++) {
+      if (this.selectedImages[i]) {
+        console.log("step 1");
+        if (!this.selectedImages[i].data || !this.selectedImages[i].path) {
+          console.log("step 2");
+          this.selectedImages[i] = this.getDefaultImageDataAtIndex(i);
+        }
+      } else {
+        this.selectedImages.push(this.getDefaultImageDataAtIndex(i));
+      }
+    }
   },
 });
 </script>
