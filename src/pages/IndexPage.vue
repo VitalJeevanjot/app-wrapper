@@ -139,7 +139,7 @@
       <q-btn
         rounded
         flat
-        class="bg-orange q-mx-sm text-white"
+        class="bg-grey-3 q-mx-sm text-black"
         @click="createBuildFromURL('fortest')"
         >Test</q-btn
       >
@@ -148,7 +148,7 @@
       <q-btn
         rounded
         flat
-        class="text-black q-mr-sm bg-grey-3"
+        class="text-black q-ma-sm bg-grey-3"
         @click="openAndroidManifest"
         icon="edit"
         style="min-width: 250px; width: 10vw"
@@ -157,7 +157,7 @@
       <q-btn
         rounded
         flat
-        class="text-black q-mx-sm bg-grey-3"
+        class="text-black q-ma-sm bg-grey-3"
         @click="openConfigFolder"
         icon="folder"
         style="min-width: 250px; width: 10vw"
@@ -166,7 +166,7 @@
       <q-btn
         rounded
         flat
-        class="text-black q-ml-sm bg-grey-3"
+        class="text-black q-ma-sm bg-grey-3"
         @click="fetchAndShowRecentLogs"
         icon="terminal"
         style="min-width: 250px; width: 10vw"
@@ -175,12 +175,13 @@
       <q-btn
         rounded
         flat
-        class="text-black q-ml-sm bg-grey-3"
+        class="text-black q-ma-sm bg-grey-3"
         @click="getDefaultImageDataAtIndex(null, true)"
         icon="image"
         style="min-width: 250px; width: 10vw"
         >Reset images</q-btn
       >
+      <CreateKeyToSign @runKeySignTool="runKeySignTool" />
     </div>
   </q-page>
 </template>
@@ -215,11 +216,13 @@ import { defineComponent, ref } from "vue";
 import { LocalStorage, Notify } from "quasar";
 import { Terminal } from "xterm";
 import ProductionBase from "components/ProductionBase.vue";
+import CreateKeyToSign from "components/CreateKeyToSign.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
     ProductionBase,
+    CreateKeyToSign,
   },
   data() {
     return {
@@ -232,6 +235,7 @@ export default defineComponent({
       terminalInstance: null,
       terminalLogs: null,
       overwrite_settings: true,
+      event_listener_added: false,
     };
   },
   methods: {
@@ -270,8 +274,45 @@ export default defineComponent({
       LocalStorage.set("terminal_logs", this.terminalLogs);
       this.terminalInstance.write(output);
     },
-    async createBuildFromURL(fortest) {
+    runKeySignTool() {},
+    async showTerminalLogs() {
       this.terminalLogs = "";
+      this.terminalProcessDialog = true;
+      setTimeout(async () => {
+        this.terminalInstance = new Terminal();
+        this.terminalInstance.open(document.getElementById("terminal"));
+        var terminal_output = setInterval(async () => {
+          var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
+          console.log(getStdout.charAt(0));
+          if (getStdout.trim()) {
+            this.writeToTerminal(getStdout);
+          } else {
+            this.writeToTerminal(".");
+          }
+          if (getStdout && getStdout?.includes("process exited with code")) {
+            clearInterval(terminal_output);
+            if (this.event_listener_added == true) {
+              document.removeEventListener("keyup", this.sendKeyToTerminal);
+              this.event_listener_added = false;
+            }
+            this.writeToTerminal(
+              "\r\nOutput path: " +
+                (await window.AppWrapperAPI.getPathOfOutput())
+            );
+          }
+          // getStdout = getStdout?.replace("\n", "");
+
+          // console.log(_commands_to_run);
+          // for (let i = 0; i < _commands_to_run.length; i++) {
+          //   // console.log(_commands_to_run[i].trim().length);
+          //   if (_commands_to_run[i].trim().length > 1) {
+          //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
+          //   }
+          // }
+        }, 100);
+      }, 200);
+    },
+    async createBuildFromURL(fortest) {
       if (!this.website_input.trim()) {
         Notify.create({
           message: "⚠️ Website URL required",
@@ -288,51 +329,22 @@ export default defineComponent({
         });
         return;
       }
-      this.terminalProcessDialog = true;
-      setTimeout(async () => {
-        await window.AppWrapperAPI.setupIcons(
-          JSON.stringify(this.selectedImages)
-        );
-        document.addEventListener("keyup", this.sendKeyToTerminal);
-        await window.AppWrapperAPI.runWrappingScript(
-          this.website_input,
-          this.app_id_input,
-          this.target_sdk_version_input,
-          this.overwrite_settings,
-          this.use_website,
-          fortest
-        );
-        this.terminalInstance = new Terminal();
-        this.terminalInstance.open(document.getElementById("terminal"));
-        var terminal_output = setInterval(async () => {
-          var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
-          console.log(getStdout.charAt(0));
-          if (getStdout.trim()) {
-            this.writeToTerminal(getStdout);
-          } else {
-            this.writeToTerminal(".");
-          }
-          if (getStdout && getStdout?.includes("process exited with code")) {
-            clearInterval(terminal_output);
-            document.removeEventListener("keyup", this.sendKeyToTerminal);
-            if (fortest == "fortest") {
-              this.writeToTerminal(
-                "\r\nOutput path: " +
-                  (await window.AppWrapperAPI.getPathOfOutput())
-              );
-            }
-          }
-          // getStdout = getStdout?.replace("\n", "");
 
-          // console.log(_commands_to_run);
-          // for (let i = 0; i < _commands_to_run.length; i++) {
-          //   // console.log(_commands_to_run[i].trim().length);
-          //   if (_commands_to_run[i].trim().length > 1) {
-          //     await window.AppWrapperAPI.runScriptFile(_commands_to_run[i]);
-          //   }
-          // }
-        }, 100);
-      }, 200);
+      await window.AppWrapperAPI.setupIcons(
+        JSON.stringify(this.selectedImages)
+      );
+      document.addEventListener("keyup", this.sendKeyToTerminal);
+      this.event_listener_added = true;
+      this.showTerminalLogs();
+      await window.AppWrapperAPI.runWrappingScript(
+        this.website_input,
+        this.app_id_input,
+        this.target_sdk_version_input,
+        this.overwrite_settings,
+        this.use_website,
+        fortest
+      );
+
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
     },
     async addImage(_index) {
@@ -385,9 +397,9 @@ export default defineComponent({
     }
     for (let i = 0; i < 5; i++) {
       if (this.selectedImages[i]) {
-        console.log("step 1");
+        // console.log("step 1");
         if (!this.selectedImages[i].data || !this.selectedImages[i].path) {
-          console.log("step 2");
+          // console.log("step 2");
           this.selectedImages[i] = this.getDefaultImageDataAtIndex(i);
         }
       } else {
