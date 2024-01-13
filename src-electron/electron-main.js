@@ -319,7 +319,7 @@ async function runKeyCreationScriptForSign(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_creation.bat"
   )}`;
-  var content = `cd "jdk-17_windows-x64_bin/bin"\r\ndir\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+  var content = `cd "jdk-17_windows-x64_bin/bin"\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
   `;
   fs.writeFileSync(keysigncreation_process_file_path, content);
 
