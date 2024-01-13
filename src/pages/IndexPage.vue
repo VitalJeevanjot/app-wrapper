@@ -291,8 +291,7 @@ export default defineComponent({
         this.terminalInstance.open(document.getElementById("terminal"));
         var terminal_output = setInterval(async () => {
           var getStdout = await window.AppWrapperAPI.getOutputForTerminal();
-          console.log(getStdout.charAt(0));
-          if (getStdout.trim()) {
+          if (getStdout?.trim()) {
             this.writeToTerminal(getStdout);
           } else {
             this.writeToTerminal(".");

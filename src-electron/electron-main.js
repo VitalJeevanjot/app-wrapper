@@ -334,12 +334,16 @@ async function runKeyCreationScriptForSign(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_creation.bat"
   )}`;
-  var content = `keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}`;
+  var content = `cd "jdk-17_windows-x64_bin/bin"
+  dir
+  keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+  `;
   await fs.writeFile(keysigncreation_process_file_path, content, (err) => {
     if (err) {
       console.log(err);
     }
   });
+  killTerminalProcess();
   bat = spawn(keysigncreation_process_file_path);
 }
 
@@ -364,6 +368,7 @@ async function runWrappingScript(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
   )}`;
+  killTerminalProcess();
   bat = spawn(wrapping_process_file_path);
   terminal_logs = null;
 
