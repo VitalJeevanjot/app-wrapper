@@ -87,4 +87,12 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getPathOfOutput: async () => {
     return await ipcRenderer.invoke("get-output-path");
   },
+  runKeyCreationScriptForSign: async (key_name, key_validity, key_alias) => {
+    return await ipcRenderer.invoke(
+      "run-key-creation-script-for-sign",
+      key_name,
+      key_validity,
+      key_alias
+    );
+  },
 });

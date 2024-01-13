@@ -274,7 +274,15 @@ export default defineComponent({
       LocalStorage.set("terminal_logs", this.terminalLogs);
       this.terminalInstance.write(output);
     },
-    runKeySignTool() {},
+    async runKeySignTool(key_name, key_validity, key_alias) {
+      // console.log(key_name, key_validity, key_alias);
+      await window.AppWrapperAPI.runKeyCreationScriptForSign(
+        key_name,
+        key_validity,
+        key_alias
+      );
+      this.showTerminalLogs();
+    },
     async showTerminalLogs() {
       this.terminalLogs = "";
       this.terminalProcessDialog = true;

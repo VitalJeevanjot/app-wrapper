@@ -135,6 +135,10 @@ app.whenReady().then(() => {
   ipcMain.handle("open-config-folder", openConfigFolder);
   ipcMain.handle("kill-terminal-process", killTerminalProcess);
   ipcMain.handle("get-output-path", getPathOfOutput);
+  ipcMain.handle(
+    "run-key-creation-script-for-sign",
+    runKeyCreationScriptForSign
+  );
   createWindow();
 });
 
@@ -320,8 +324,27 @@ async function getOutputForTerminal() {
   return output;
 }
 
+async function runKeyCreationScriptForSign(
+  event,
+  key_name,
+  key_validity,
+  key_alias
+) {
+  var keysigncreation_process_file_path = `${path.join(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+    "keysign_creation.bat"
+  )}`;
+  var content = `keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}`;
+  await fs.writeFile(keysigncreation_process_file_path, content, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  bat = spawn(keysigncreation_process_file_path);
+}
+
 async function runWrappingScript(
-  env,
+  event,
   website_URL,
   app_ID,
   target_sdk_ver,

@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       createKeyToSignDialog: false,
-      key_name: "app-release-key.jks",
+      key_name: "app-release-key",
       key_validity: 10000,
       key_alias: "my-alias",
     };
