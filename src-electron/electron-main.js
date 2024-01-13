@@ -187,7 +187,7 @@ async function editAppFromSettings(
   use_website
 ) {
   if (use_website) {
-    await fs.writeFile(
+    fs.writeFileSync(
       path.resolve(
         __dirname,
         process.env.QUASAR_PUBLIC_FOLDER,
@@ -195,30 +195,20 @@ async function editAppFromSettings(
         "www",
         "index.html"
       ),
-      getHTMLwithURL(website_URL),
-      (err) => {
-        if (err) {
-          console.log(err);
-        }
-      }
+      getHTMLwithURL(website_URL)
     );
   }
-  await fs.writeFile(
+  fs.writeFileSync(
     path.resolve(
       __dirname,
       process.env.QUASAR_PUBLIC_FOLDER,
       "capacitor_config",
       "capacitor.config.json"
     ),
-    getConfigWithAppId(app_ID, use_website, website_URL),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
+    getConfigWithAppId(app_ID, use_website, website_URL)
   );
   if (overwrite_settings) {
-    await fs.writeFile(
+    fs.writeFileSync(
       path.resolve(
         __dirname,
         process.env.QUASAR_PUBLIC_FOLDER,
@@ -226,12 +216,7 @@ async function editAppFromSettings(
         "android",
         "variables.gradle"
       ),
-      getVariablesWithTargetSDKver(target_sdk_ver ? target_sdk_ver : 33),
-      (err) => {
-        if (err) {
-          console.log(err);
-        }
-      }
+      getVariablesWithTargetSDKver(target_sdk_ver ? target_sdk_ver : 33)
     );
   }
 }
@@ -334,17 +319,11 @@ async function runKeyCreationScriptForSign(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_creation.bat"
   )}`;
-  var content = `cd "jdk-17_windows-x64_bin/bin"
-  dir
-  keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+  var content = `cd "jdk-17_windows-x64_bin/bin"\r\ndir\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
   `;
-  await fs.writeFile(keysigncreation_process_file_path, content, (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
-  killTerminalProcess();
-  bat = spawn(keysigncreation_process_file_path);
+  fs.writeFileSync(keysigncreation_process_file_path, content);
+
+  setupTerminalProcess(keysigncreation_process_file_path);
 }
 
 async function runWrappingScript(
@@ -368,8 +347,12 @@ async function runWrappingScript(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
   )}`;
+  setupTerminalProcess(wrapping_process_file_path);
+}
+
+function setupTerminalProcess(file_path) {
   killTerminalProcess();
-  bat = spawn(wrapping_process_file_path);
+  bat = spawn(file_path);
   terminal_logs = null;
 
   bat.stdout.on("data", (data) => {
