@@ -181,7 +181,7 @@
         style="min-width: 250px; width: 10vw"
         >Reset images</q-btn
       >
-      <CreateKeyToSign @runKeySignTool="runKeySignTool" />
+      <CreateKeyToSign />
     </div>
   </q-page>
 </template>
@@ -273,15 +273,7 @@ export default defineComponent({
       this.terminalLogs = this.terminalLogs + output;
       LocalStorage.set("terminal_logs", this.terminalLogs);
       this.terminalInstance.write(output);
-    },
-    async runKeySignTool(key_name, key_validity, key_alias) {
-      // console.log(key_name, key_validity, key_alias);
-      await window.AppWrapperAPI.runKeyCreationScriptForSign(
-        key_name,
-        key_validity,
-        key_alias
-      );
-      this.showTerminalLogs();
+      console.log(output);
     },
     async showTerminalLogs() {
       this.terminalLogs = "";

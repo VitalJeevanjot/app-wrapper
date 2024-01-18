@@ -74,10 +74,8 @@ export default {
     };
   },
   methods: {
-    createKeyToSign() {
-      this.terminalProcessDialog = true;
-      this.$emit(
-        "runKeySignTool",
+    async createKeyToSign() {
+      await window.AppWrapperAPI.runKeyCreationScriptForSign(
         this.key_name,
         this.key_validity,
         this.key_alias

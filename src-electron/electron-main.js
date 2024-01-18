@@ -319,11 +319,15 @@ async function runKeyCreationScriptForSign(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_creation.bat"
   )}`;
-  var content = `cd "jdk-17_windows-x64_bin/bin"\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+  var content = `cd "${path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER
+  )}\\jdk-17_windows-x64_bin\\jdk-17.0.9\\bin"
+\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
   `;
   fs.writeFileSync(keysigncreation_process_file_path, content);
 
-  setupTerminalProcess(keysigncreation_process_file_path);
+  shell.openPath(keysigncreation_process_file_path);
 }
 
 async function runWrappingScript(
@@ -354,7 +358,6 @@ function setupTerminalProcess(file_path) {
   killTerminalProcess();
   bat = spawn(file_path);
   terminal_logs = null;
-
   bat.stdout.on("data", (data) => {
     // console.log(`${data.toString()}`);
     // console.log(data.toString().indexOf("png"));
