@@ -188,6 +188,15 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     fs.rmSync(`${output_path}\\my-app-unsigned-aligned.apk`);
     fs.rmSync(`${output_path}\\my-app-release.apk`);
     fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
+    fs.rmSync(
+      path.join(
+        path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+        "capacitor_config",
+        "android",
+        ".gradle"
+      ),
+      { recursive: true, force: true }
+    );
   } catch (e) {
     console.log(e);
   }
