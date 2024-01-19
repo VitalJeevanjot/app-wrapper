@@ -135,10 +135,12 @@ app.whenReady().then(() => {
   ipcMain.handle("open-config-folder", openConfigFolder);
   ipcMain.handle("kill-terminal-process", killTerminalProcess);
   ipcMain.handle("get-output-path", getPathOfOutput);
+  ipcMain.handle("open-file-folder-selector", openFileFolderSelector);
   ipcMain.handle(
     "run-key-creation-script-for-sign",
     runKeyCreationScriptForSign
   );
+  ipcMain.handle("run-script-to-sign", runScriptToSign);
   createWindow();
 });
 
@@ -179,6 +181,24 @@ function getPathOfOutput() {
     "apk"
   );
 }
+
+function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
+  var keysigncreation_process_file_path = `${path.join(
+    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+    "keysign_signing.bat"
+  )}`;
+  var content = `cd "${path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER
+  )}\\commandlinetools-win-10406996_latest\\build-tools\\34.0.0"
+\r\nzipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
+\r\napksigner sign --ks "${key_path}" --out "${output_path}\\my-app-release.apk" "${output_path}\\my-app-unsigned-aligned.apk"
+  `;
+  fs.writeFileSync(keysigncreation_process_file_path, content);
+
+  shell.openPath(keysigncreation_process_file_path);
+}
+
 async function editAppFromSettings(
   website_URL,
   app_ID,
@@ -220,7 +240,46 @@ async function editAppFromSettings(
     );
   }
 }
-
+async function openFileFolderSelector(e, filters) {
+  var apk_path = path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER,
+    "capacitor_config",
+    "android",
+    "app",
+    "build",
+    "outputs",
+    "apk",
+    "debug"
+  );
+  var jks_path = path.resolve(
+    __dirname,
+    process.env.QUASAR_PUBLIC_FOLDER,
+    "jdk-17_windows-x64_bin",
+    "jdk-17.0.9",
+    "bin"
+  );
+  var { canceled, filePaths } = await getPaths(filters);
+  async function getPaths(filters) {
+    if (filters) {
+      return await dialog.showOpenDialog({
+        title: "Select directories with jpg/png",
+        properties: ["openFile"],
+        defaultPath: filters[0] == "apk" ? apk_path : jks_path,
+        filters: [{ name: "Files", extensions: filters }],
+      });
+    } else {
+      return await dialog.showOpenDialog({
+        title: "Select directories with jpg/png",
+        properties: ["openDirectory"],
+        filters: [{ name: "Output" }],
+      });
+    }
+  }
+  if (!canceled) {
+    return filePaths[0];
+  }
+}
 async function selectAndShowIMG(event) {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     title: "Select directories with jpg/png",

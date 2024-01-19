@@ -95,4 +95,15 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       key_alias
     );
   },
+  openFileFolderSelector: async (filters) => {
+    return await ipcRenderer.invoke("open-file-folder-selector", filters);
+  },
+  runSigningScript: async (unsigned_apk_path, key_path, output_path) => {
+    await ipcRenderer.invoke(
+      "run-script-to-sign",
+      unsigned_apk_path,
+      key_path,
+      output_path
+    );
+  },
 });
