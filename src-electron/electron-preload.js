@@ -54,6 +54,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   runWrappingScript: (
     website_URL,
     app_ID,
+    app_name,
     target_sdk_ver,
     overwrite_settings,
     use_website,
@@ -63,6 +64,7 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       "run-wrapping-script",
       website_URL,
       app_ID,
+      app_name,
       target_sdk_ver,
       overwrite_settings,
       use_website,

@@ -23,17 +23,16 @@ set "ANDROID_SDK_ROOT=%cd%\commandlinetools-win-10406996_latest"
 @REM  sdkmanager.bat "platforms;android-33"
 
 call node -v
-cd capacitor_config
-cd
+call cd capacitor_config
 @REM echo "Printing current path............................"
-cd
+@REM call npx
 call npx capacitor-assets generate
 call npx cap sync
 @REM call npx cap run android
 
 
-cd android
-call gradlew.bat assembleDebug
+call cd android
+call gradlew.bat clean assembleDebug
 @REM echo "DONE OFF...."
 @REM cd ..
 echo "DONE...."

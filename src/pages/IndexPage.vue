@@ -18,6 +18,8 @@
         outlined
         v-model="website_input"
         :label="`Enter ${use_website ? 'website' : 'directory path in full'}`"
+        :readonly="use_website ? false : true"
+        @click="openDirectorySelector"
         color="black"
         style="width: 60vw; min-width: 250px"
       />
@@ -34,6 +36,15 @@
     <div class="row justify-center q-mt-sm">
       <q-input
         outlined
+        v-model="app_name_input"
+        label="Enter app Name"
+        color="black"
+        style="width: 60vw; min-width: 250px"
+      />
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-input
+        outlined
         type="number"
         v-model="target_sdk_version_input"
         label="Target sdk version (e.g. 33)"
@@ -43,7 +54,7 @@
     </div>
     <div class="row justify-center q-mt-sm">
       <q-toggle
-        label="Overwrite target sdk"
+        label="Overwrite variables file with above target sdk"
         v-model="overwrite_settings"
         color="grey-9"
         keep-color
@@ -113,8 +124,6 @@
       </div>
     </div>
 
-    <ProductionBase />
-
     <q-dialog v-model="terminalProcessDialog" persistent>
       <q-card style="max-width: 90vw" class="bg-black">
         <q-card-section class="row items-center q-pb-sm text-white">
@@ -144,6 +153,7 @@
         >Test</q-btn
       >
     </div>
+    <ProductionBase />
     <div class="row justify-center q-mt-md">
       <q-btn
         rounded
@@ -229,6 +239,7 @@ export default defineComponent({
       use_website: true,
       website_input: "",
       app_id_input: "",
+      app_name_input: "",
       target_sdk_version_input: 33,
       selectedImages: [],
       terminalProcessDialog: false,
@@ -239,6 +250,12 @@ export default defineComponent({
     };
   },
   methods: {
+    async openDirectorySelector() {
+      if (this.use_website == false) {
+        this.website_input =
+          await window.AppWrapperAPI.openFileFolderSelector();
+      }
+    },
     async fetchAndShowRecentLogs() {
       let logs = LocalStorage.getItem("terminal_logs");
       this.terminalProcessDialog = true;
@@ -320,9 +337,9 @@ export default defineComponent({
         });
         return;
       }
-      if (!this.app_id_input.trim()) {
+      if (!this.app_id_input.trim() || !this.app_name_input.trim()) {
         Notify.create({
-          message: "⚠️ App ID required",
+          message: "⚠️ App ID and Name required",
           color: "black",
           position: "bottom-right",
         });
@@ -338,6 +355,7 @@ export default defineComponent({
       await window.AppWrapperAPI.runWrappingScript(
         this.website_input,
         this.app_id_input,
+        this.app_name_input,
         this.target_sdk_version_input,
         this.overwrite_settings,
         this.use_website,

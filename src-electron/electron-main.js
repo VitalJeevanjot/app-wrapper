@@ -52,10 +52,10 @@ function getHTMLwithURL(url) {
   `;
 }
 
-function getConfigWithAppId(appid, use_website, website_URL) {
+function getConfigWithAppId(appid, app_name, use_website, website_URL) {
   return `{
   "appId": "${appid}",
-  "appName": "capacitor_config",
+  "appName": "${app_name}",
   "webDir": "${use_website ? "www" : website_URL.replace(/\\/g, "/")}",
   "server": {
     "androidScheme": "https"
@@ -127,7 +127,7 @@ app.whenReady().then(() => {
   // ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
   ipcMain.handle("setup-icons-for-build", setupIconsForBuild);
-  ipcMain.handle("get-build-commands", getBuildCommands);
+  // ipcMain.handle("get-build-commands", getBuildCommands);
   ipcMain.handle("run-wrapping-script", runWrappingScript);
   ipcMain.handle("get-output-from-terminal", getOutputForTerminal);
   ipcMain.handle("send-input-to-terminal", sendInputToTerminal);
@@ -183,6 +183,14 @@ function getPathOfOutput() {
 }
 
 function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
+  console.log(`${output_path}\\my-app-unsigned-aligned.apk`);
+  try {
+    fs.rmSync(`${output_path}\\my-app-unsigned-aligned.apk`);
+    fs.rmSync(`${output_path}\\my-app-release.apk`);
+    fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
+  } catch (e) {
+    console.log(e);
+  }
   var keysigncreation_process_file_path = `${path.join(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_signing.bat"
@@ -203,6 +211,7 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
 async function editAppFromSettings(
   website_URL,
   app_ID,
+  app_name,
   target_sdk_ver,
   overwrite_settings,
   use_website
@@ -226,7 +235,7 @@ async function editAppFromSettings(
       "capacitor_config",
       "capacitor.config.json"
     ),
-    getConfigWithAppId(app_ID, use_website, website_URL)
+    getConfigWithAppId(app_ID, app_name, use_website, website_URL)
   );
   if (overwrite_settings) {
     fs.writeFileSync(
@@ -332,16 +341,16 @@ function setupIconsForBuild(event, _paths) {
   }
 }
 
-function getBuildCommands() {
-  var wrapper_file_path = `${path.join(
-    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    "app_wrap_apk.bat"
-  )}`;
-  var file_content_splitted = fs
-    .readFileSync(wrapper_file_path, { encoding: "utf-8" })
-    .split("\n");
-  return file_content_splitted;
-}
+// function getBuildCommands() {
+//   var wrapper_file_path = `${path.join(
+//     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+//     "app_wrap_apk.bat"
+//   )}`;
+//   var file_content_splitted = fs
+//     .readFileSync(wrapper_file_path, { encoding: "utf-8" })
+//     .split("\n");
+//   return file_content_splitted;
+// }
 
 async function openAndroidManifest() {
   await shell.openPath(
@@ -395,6 +404,7 @@ async function runWrappingScript(
   event,
   website_URL,
   app_ID,
+  app_name,
   target_sdk_ver,
   overwrite_settings,
   use_website,
@@ -403,6 +413,7 @@ async function runWrappingScript(
   await editAppFromSettings(
     website_URL,
     app_ID,
+    app_name,
     target_sdk_ver,
     overwrite_settings,
     use_website,
@@ -443,6 +454,7 @@ function setupTerminalProcess(file_path) {
       var _exit_message = `\r\nprocess exited with code ${code}`;
     }
     terminal_logs += `${_exit_message.toString()}`;
+    shell.openPath(getPathOfOutput());
     // console.log("________________________________________________");
     // console.log(_exit_message);
   });
