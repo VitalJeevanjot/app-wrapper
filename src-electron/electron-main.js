@@ -187,13 +187,14 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_signing.bat"
   )}`;
-  var content = `cd "${path.resolve(
+  var content = `call cd "${path.resolve(
     __dirname,
     process.env.QUASAR_PUBLIC_FOLDER
   )}\\commandlinetools-win-10406996_latest\\build-tools\\34.0.0"
-\r\nzipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
-\r\napksigner sign --ks "${key_path}" --out "${output_path}\\my-app-release.apk" "${output_path}\\my-app-unsigned-aligned.apk"
-  `;
+\r\ncall zipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
+\r\ncall apksigner sign --ks "${key_path}" --out "${output_path}\\my-app-release.apk" "${output_path}\\my-app-unsigned-aligned.apk"
+ \r\ncall explorer.exe  "${output_path}"
+ \r\ncall pause`;
   fs.writeFileSync(keysigncreation_process_file_path, content);
 
   shell.openPath(keysigncreation_process_file_path);
@@ -378,11 +379,12 @@ async function runKeyCreationScriptForSign(
     path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
     "keysign_creation.bat"
   )}`;
-  var content = `cd "${path.resolve(
+  var content = `call cd "${path.resolve(
     __dirname,
     process.env.QUASAR_PUBLIC_FOLDER
   )}\\jdk-17_windows-x64_bin\\jdk-17.0.9\\bin"
-\r\nkeytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+\r\ncall keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
+\r\npause
   `;
   fs.writeFileSync(keysigncreation_process_file_path, content);
 
