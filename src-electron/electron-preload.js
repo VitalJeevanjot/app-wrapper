@@ -58,7 +58,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
     target_sdk_ver,
     overwrite_settings,
     use_website,
-    fortest
+    fortest,
+    clean
   ) => {
     return ipcRenderer.invoke(
       "run-wrapping-script",
@@ -68,7 +69,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       target_sdk_ver,
       overwrite_settings,
       use_website,
-      fortest
+      fortest,
+      clean
     );
   },
   getOutputForTerminal: () => {

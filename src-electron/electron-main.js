@@ -418,7 +418,8 @@ async function runWrappingScript(
   target_sdk_ver,
   overwrite_settings,
   use_website,
-  fortest
+  fortest,
+  clean
 ) {
   await editAppFromSettings(
     website_URL,
@@ -429,10 +430,26 @@ async function runWrappingScript(
     use_website,
     fortest
   );
-  var wrapping_process_file_path = `${path.join(
-    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-    fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
-  )}`;
+  var wrapping_process_file_path = null;
+  if (clean) {
+    fs.rmSync(
+      path.join(
+        path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+        "capacitor_config",
+        "android"
+      ),
+      { recursive: true, force: true }
+    );
+    wrapping_process_file_path = `${path.join(
+      path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+      "app_clean_wrap_apk.bat"
+    )}`;
+  } else {
+    wrapping_process_file_path = `${path.join(
+      path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+      fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
+    )}`;
+  }
   setupTerminalProcess(wrapping_process_file_path);
 }
 

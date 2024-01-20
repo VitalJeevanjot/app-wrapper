@@ -32,7 +32,7 @@ call npx cap sync
 
 
 call cd android
-call gradlew.bat clean build
+call gradlew.bat clean assembleDebug
 @REM echo "DONE OFF...."
 @REM cd ..
 echo "DONE...."

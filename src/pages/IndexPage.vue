@@ -148,6 +148,13 @@
       <q-btn
         rounded
         flat
+        class="bg-purple-9 q-mx-sm text-white"
+        @click="createBuildFromURL(null, 'clean')"
+        >Clean Build</q-btn
+      >
+      <q-btn
+        rounded
+        flat
         class="bg-grey-3 q-mx-sm text-black"
         @click="createBuildFromURL('fortest')"
         >Test</q-btn
@@ -328,7 +335,7 @@ export default defineComponent({
         }, 100);
       }, 200);
     },
-    async createBuildFromURL(fortest) {
+    async createBuildFromURL(fortest, clean) {
       if (!this.website_input.trim()) {
         Notify.create({
           message: "⚠️ Website URL required",
@@ -359,7 +366,8 @@ export default defineComponent({
         this.target_sdk_version_input,
         this.overwrite_settings,
         this.use_website,
-        fortest
+        fortest,
+        clean
       );
 
       // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
