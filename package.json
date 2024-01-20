@@ -1,5 +1,5 @@
 {
-  "name": "app-wrapper",
+  "name": "appwrapperapk",
   "version": "0.0.1",
   "description": "Wrap websites in android app",
   "productName": "App Wrapper",
@@ -26,6 +26,7 @@
     "@quasar/app-vite": "^1.3.0",
     "autoprefixer": "^10.4.2",
     "electron": "^28.1.0",
+    "electron-builder": "^24.3.0",
     "electron-packager": "^17.1.1",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",

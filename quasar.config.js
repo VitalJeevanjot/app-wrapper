@@ -170,7 +170,7 @@ module.exports = configure(function (/* ctx */) {
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
-      bundler: "packager", // 'packager' or 'builder'
+      bundler: "builder", // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -185,8 +185,17 @@ module.exports = configure(function (/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        appId: "app-wrapper",
+        appId: "27126VitalVictor.AppWrapperAPK",
+        asar: false,
+        win: {
+          target: "appx", // or appx or more
+        },
+        appx: {
+          displayName: "Android App Wrapper",
+          publisher: "CN=D8EA149B-EABF-46F9-A877-703D35BFD389",
+          publisherDisplayName: "VitalVictor",
+          languages: "en-GB",
+        },
       },
     },
 
