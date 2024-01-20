@@ -109,8 +109,9 @@ export default defineComponent({
     // };
   },
   async mounted() {
-    console.log("starting...");
-    console.log(await window.AppWrapperAPI.getPublicFolderPath()); // Remove it only after checking on built version that it return path correct for dependencies
+    // console.log("starting...");
+    // console.log(await window.AppWrapperAPI.getPublicFolderPath()); // Remove it only after checking on built version that it return path correct for dependencies
+    // Notify.create(await window.AppWrapperAPI.getPublicFolderPath());
     // await window.AppWrapperAPI.runBatchFile();
   },
 });
