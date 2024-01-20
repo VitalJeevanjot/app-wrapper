@@ -172,7 +172,6 @@ function getPublicPath() {
 function getPathOfOutput() {
   return path.resolve(
     __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
     "capacitor_config",
     "android",
     "app",
@@ -188,14 +187,17 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     fs.rmSync(`${output_path}\\my-app-unsigned-aligned.apk`);
     fs.rmSync(`${output_path}\\my-app-release.apk`);
     fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
-    fs.rmSync(path.join("capacitor_config", "android", ".gradle"), {
+    fs.rmSync(path.join(__dirname, "capacitor_config", "android", ".gradle"), {
       recursive: true,
       force: true,
     });
   } catch (e) {
     console.log(e);
   }
-  var keysigncreation_process_file_path = `${path.join("keysign_signing.bat")}`;
+  var keysigncreation_process_file_path = `${path.join(
+    __dirname,
+    "keysign_signing.bat"
+  )}`;
   var content = `call cd "${path.resolve(
     __dirname,
     process.env.QUASAR_PUBLIC_FOLDER
@@ -345,7 +347,7 @@ function setupIconsForBuild(event, _paths) {
 
 // function getBuildCommands() {
 //   var wrapper_file_path = `${path.join(
-//
+//     __dirname,
 //     "app_wrap_apk.bat"
 //   )}`;
 //   var file_content_splitted = fs
@@ -387,6 +389,7 @@ async function runKeyCreationScriptForSign(
   key_alias
 ) {
   var keysigncreation_process_file_path = `${path.join(
+    __dirname,
     "keysign_creation.bat"
   )}`;
   var content = `call cd "${path.resolve(
@@ -423,13 +426,17 @@ async function runWrappingScript(
   );
   var wrapping_process_file_path = null;
   if (clean) {
-    fs.rmSync(path.join("capacitor_config", "android"), {
+    fs.rmSync(path.join(__dirname, "capacitor_config", "android"), {
       recursive: true,
       force: true,
     });
-    wrapping_process_file_path = `${path.join("app_clean_wrap_apk.bat")}`;
+    wrapping_process_file_path = `${path.join(
+      __dirname,
+      "app_clean_wrap_apk.bat"
+    )}`;
   } else {
     wrapping_process_file_path = `${path.join(
+      __dirname,
       fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
     )}`;
   }
