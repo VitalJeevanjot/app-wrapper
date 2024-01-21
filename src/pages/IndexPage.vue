@@ -17,7 +17,9 @@
       <q-input
         outlined
         v-model="website_input"
-        :label="`Enter ${use_website ? 'website' : 'directory path in full'}`"
+        :label="`${
+          use_website ? 'Enter website URL' : 'Click to select directory path'
+        }`"
         :readonly="use_website ? false : true"
         @click="openDirectorySelector"
         color="black"
