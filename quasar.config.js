@@ -185,7 +185,7 @@ module.exports = configure(function (/* ctx */) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-        appId: "27126VitalVictor.AppWrapperAPK",
+        appId: "27126VitalVictor.AppWebsiteWrapper",
         asar: false,
         win: {
           target: "appx", // or appx or more
