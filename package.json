@@ -2,7 +2,7 @@
   "name": "appwrapperapk",
   "version": "0.0.1",
   "description": "Wrap websites in android app",
-  "productName": "App Wrapper",
+  "productName": "App Wrapper apk",
   "author": "Jeevanjot Singh <40867747+VitalJeevanjot@users.noreply.github.com>",
   "private": true,
   "scripts": {
