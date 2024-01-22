@@ -168,10 +168,10 @@
         rounded
         flat
         class="text-black q-ma-sm bg-grey-3"
-        @click="openAndroidManifest"
-        icon="edit"
+        @click="checkOrCopyFiles(true)"
+        icon="content_copy"
         style="min-width: 250px; width: 10vw"
-        >Android Manifest</q-btn
+        >Install Dependencies</q-btn
       >
       <q-btn
         rounded
@@ -232,7 +232,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import { LocalStorage, Notify } from "quasar";
+import { Loading, LocalStorage, Notify } from "quasar";
 import { Terminal } from "xterm";
 import ProductionBase from "components/ProductionBase.vue";
 import CreateKeyToSign from "components/CreateKeyToSign.vue";
@@ -416,8 +416,19 @@ export default defineComponent({
       }
       return imgData[index];
     },
+    async checkOrCopyFiles(manually) {
+      if (LocalStorage.getItem("filesCopied") && !manually) {
+        return;
+      } else {
+        Loading.show({ message: "Copying files...." });
+        await window.AppWrapperAPI.copyFilesForAllProcesses();
+        LocalStorage.set("filesCopied", true);
+        Loading.hide();
+      }
+    },
   },
-  mounted() {
+  async mounted() {
+    await this.checkOrCopyFiles();
     this.selectedImages = LocalStorage.getItem("selectedImages");
     if (!this.selectedImages) {
       this.selectedImages = [];

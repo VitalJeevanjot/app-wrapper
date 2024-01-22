@@ -100,7 +100,6 @@ function createWindow() {
       preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
     },
   });
-
   mainWindow.loadURL(process.env.APP_URL);
 
   if (process.env.DEBUGGING) {
@@ -109,7 +108,8 @@ function createWindow() {
   } else {
     // we're on production; no access to devtools pls
     mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow.webContents.closeDevTools();
+      // mainWindow.webContents.closeDevTools();
+      mainWindow.webContents.openDevTools();
     });
   }
 
@@ -122,7 +122,7 @@ var terminal_logs = null;
 var bat = null;
 app.whenReady().then(() => {
   // setupTerminalInstanceAndPathsBatchFile();
-  ipcMain.handle("get-public-path", getPublicPath);
+  // ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
   // ipcMain.handle("build-app-from-URL", buildAppFromURL);
   ipcMain.handle("select-and-show-IMG", selectAndShowIMG);
@@ -141,7 +141,12 @@ app.whenReady().then(() => {
     runKeyCreationScriptForSign
   );
   ipcMain.handle("run-script-to-sign", runScriptToSign);
+  ipcMain.handle("copy-files-for-all-processes", copyFilesForAllProcesses);
   createWindow();
+
+  // const filePath = path.join(app.getPath("userData"));
+  // console.log("filePath");
+  // console.log(filePath);
 });
 
 app.on("window-all-closed", async () => {
@@ -166,13 +171,13 @@ function killTerminalProcess() {
   }
 }
 
-function getPublicPath() {
-  return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
-}
+// function getPublicPath() {
+//   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+// }
 function getPathOfOutput() {
   return path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "capacitor_config",
     "android",
     "app",
@@ -180,6 +185,19 @@ function getPathOfOutput() {
     "outputs",
     "apk"
   );
+}
+
+async function copyFilesForAllProcesses(e) {
+  await new Promise((resolve, reject) => {
+    fs.cp(
+      path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
+      path.resolve(app.getPath("userData"), "Android App Wrapper"),
+      { recursive: true, force: true },
+      () => {
+        resolve();
+      }
+    );
+  });
 }
 
 function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
@@ -190,8 +208,8 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
     fs.rmSync(
       path.resolve(
-        __dirname,
-        process.env.QUASAR_PUBLIC_FOLDER,
+        app.getPath("userData"),
+        "Android App Wrapper",
         "capacitor_config",
         "android",
         ".gradle"
@@ -202,13 +220,13 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     console.log(e);
   }
   var keysigncreation_process_file_path = `${path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "keysign_signing.bat"
   )}`;
   var content = `call cd "${path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER
+    app.getPath("userData"),
+    "Android App Wrapper"
   )}\\commandlinetools-win-10406996_latest\\build-tools\\34.0.0"
 \r\ncall zipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
 \r\ncall apksigner sign --ks "${key_path}" --out "${output_path}\\my-app-release.apk" "${output_path}\\my-app-unsigned-aligned.apk"
@@ -231,8 +249,8 @@ async function editAppFromSettings(
   if (use_website) {
     fs.writeFileSync(
       path.resolve(
-        __dirname,
-        process.env.QUASAR_PUBLIC_FOLDER,
+        app.getPath("userData"),
+        "Android App Wrapper",
         "capacitor_config",
         "www",
         "index.html"
@@ -242,8 +260,8 @@ async function editAppFromSettings(
   }
   fs.writeFileSync(
     path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
+      app.getPath("userData"),
+      "Android App Wrapper",
       "capacitor_config",
       "capacitor.config.json"
     ),
@@ -252,8 +270,8 @@ async function editAppFromSettings(
   if (overwrite_settings) {
     fs.writeFileSync(
       path.resolve(
-        __dirname,
-        process.env.QUASAR_PUBLIC_FOLDER,
+        app.getPath("userData"),
+        "Android App Wrapper",
         "capacitor_config",
         "android",
         "variables.gradle"
@@ -264,8 +282,8 @@ async function editAppFromSettings(
 }
 async function openFileFolderSelector(e, filters) {
   var apk_path = path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "capacitor_config",
     "android",
     "app",
@@ -275,8 +293,8 @@ async function openFileFolderSelector(e, filters) {
     "debug"
   );
   var jks_path = path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "jdk-17_windows-x64_bin",
     "jdk-17.0.9",
     "bin"
@@ -323,8 +341,8 @@ async function selectAndShowIMG(event) {
 
 function setupIconsForBuild(event, _paths) {
   let _current_path = path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "capacitor_config",
     "resources"
   );
@@ -368,8 +386,8 @@ function setupIconsForBuild(event, _paths) {
 async function openAndroidManifest() {
   await shell.openPath(
     path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
+      app.getPath("userData"),
+      "Android App Wrapper",
       "capacitor_config",
       "android",
       "app",
@@ -381,7 +399,7 @@ async function openAndroidManifest() {
 }
 async function openConfigFolder() {
   await shell.openPath(
-    path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER)
+    path.resolve(app.getPath("userData"), "Android App Wrapper")
   );
 }
 
@@ -398,13 +416,13 @@ async function runKeyCreationScriptForSign(
   key_alias
 ) {
   var keysigncreation_process_file_path = `${path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER,
+    app.getPath("userData"),
+    "Android App Wrapper",
     "keysign_creation.bat"
   )}`;
   var content = `call cd "${path.resolve(
-    __dirname,
-    process.env.QUASAR_PUBLIC_FOLDER
+    app.getPath("userData"),
+    "Android App Wrapper"
   )}\\jdk-17_windows-x64_bin\\jdk-17.0.9\\bin"
 \r\ncall keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
 \r\npause
@@ -438,22 +456,22 @@ async function runWrappingScript(
   if (clean) {
     fs.rmSync(
       path.resolve(
-        __dirname,
-        process.env.QUASAR_PUBLIC_FOLDER,
+        app.getPath("userData"),
+        "Android App Wrapper",
         "capacitor_config",
         "android"
       ),
       { recursive: true, force: true }
     );
     wrapping_process_file_path = `${path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
+      app.getPath("userData"),
+      "Android App Wrapper",
       "app_clean_wrap_apk.bat"
     )}`;
   } else {
     wrapping_process_file_path = `${path.resolve(
-      __dirname,
-      process.env.QUASAR_PUBLIC_FOLDER,
+      app.getPath("userData"),
+      "Android App Wrapper",
       fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
     )}`;
   }

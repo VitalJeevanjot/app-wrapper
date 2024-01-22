@@ -33,9 +33,9 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   runScriptFile: async (command) => {
     return await ipcRenderer.invoke("run-script", command);
   },
-  getPublicFolderPath: () => {
-    return ipcRenderer.invoke("get-public-path");
-  },
+  // getPublicFolderPath: () => {
+  //   return ipcRenderer.invoke("get-public-path");
+  // },
   setupIcons: (paths_objects) => {
     return ipcRenderer.invoke("setup-icons-for-build", paths_objects);
   },
@@ -109,5 +109,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       key_path,
       output_path
     );
+  },
+  copyFilesForAllProcesses: async () => {
+    await ipcRenderer.invoke("copy-files-for-all-processes");
   },
 });
