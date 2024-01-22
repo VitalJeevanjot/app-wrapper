@@ -188,6 +188,9 @@ function getPathOfOutput() {
 }
 
 async function copyFilesForAllProcesses(e) {
+  if (!fs.existsSync(path.resolve(app.getPath("userData")))) {
+    fs.mkdirSync(path.resolve(app.getPath("userData"), { recursive: true }));
+  }
   await new Promise((resolve, reject) => {
     fs.cp(
       path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),

@@ -200,6 +200,15 @@
         style="min-width: 250px; width: 10vw"
         >Reset images</q-btn
       >
+      <q-btn
+        rounded
+        flat
+        class="text-black q-ma-sm bg-grey-3"
+        @click="openHowToUse"
+        icon="info"
+        style="min-width: 250px; width: 10vw"
+        >How to use</q-btn
+      >
       <CreateKeyToSign />
     </div>
   </q-page>
@@ -259,6 +268,12 @@ export default defineComponent({
     };
   },
   methods: {
+    openHowToUse() {
+      window.open(
+        "https://gist.github.com/VitalJeevanjot/fc47aa87b51943f43a85f22f6bd969a1",
+        "_blank"
+      );
+    },
     async openDirectorySelector() {
       if (this.use_website == false) {
         this.website_input =
