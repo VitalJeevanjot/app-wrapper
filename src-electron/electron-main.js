@@ -108,8 +108,8 @@ function createWindow() {
   } else {
     // we're on production; no access to devtools pls
     mainWindow.webContents.on("devtools-opened", () => {
-      // mainWindow.webContents.closeDevTools();
-      mainWindow.webContents.openDevTools();
+      mainWindow.webContents.closeDevTools();
+      // mainWindow.webContents.openDevTools();
     });
   }
 
@@ -207,7 +207,29 @@ async function copyFilesForAllProcesses(e) {
       path.resolve(app.getPath("documents"), "Android App Wrapper"),
       { recursive: true, force: true },
       () => {
-        resolve();
+        if (
+          fs.existsSync(
+            path.resolve(app.getPath("documents")),
+            "Android App Wrapper",
+            "node_modules"
+          )
+        ) {
+          fs.rename(
+            path.resolve(
+              app.getPath("documents"),
+              "Android App Wrapper",
+              "node_modules"
+            ),
+            path.resolve(
+              app.getPath("documents"),
+              "Android App Wrapper",
+              "node-v20.10.0-win-x64"
+            ),
+            () => {
+              resolve();
+            }
+          );
+        }
       }
     );
   });
