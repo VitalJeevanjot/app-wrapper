@@ -144,7 +144,7 @@ app.whenReady().then(() => {
   ipcMain.handle("copy-files-for-all-processes", copyFilesForAllProcesses);
   createWindow();
 
-  // const filePath = path.join(app.getPath("userData"));
+  // const filePath = path.join(app.getPath("documents"));
   // console.log("filePath");
   // console.log(filePath);
 });
@@ -176,7 +176,7 @@ function killTerminalProcess() {
 // }
 function getPathOfOutput() {
   return path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "capacitor_config",
     "android",
@@ -188,13 +188,23 @@ function getPathOfOutput() {
 }
 
 async function copyFilesForAllProcesses(e) {
-  if (!fs.existsSync(path.resolve(app.getPath("userData")))) {
-    fs.mkdirSync(path.resolve(app.getPath("userData"), { recursive: true }));
+  if (
+    !fs.existsSync(
+      path.resolve(app.getPath("documents")),
+      "Android App Wrapper"
+    )
+  ) {
+    fs.mkdirSync(
+      path.resolve(app.getPath("documents"), "Android App Wrapper"),
+      {
+        recursive: true,
+      }
+    );
   }
   await new Promise((resolve, reject) => {
     fs.cp(
       path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-      path.resolve(app.getPath("userData"), "Android App Wrapper"),
+      path.resolve(app.getPath("documents"), "Android App Wrapper"),
       { recursive: true, force: true },
       () => {
         resolve();
@@ -211,7 +221,7 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
     fs.rmSync(
       path.resolve(
-        app.getPath("userData"),
+        app.getPath("documents"),
         "Android App Wrapper",
         "capacitor_config",
         "android",
@@ -223,12 +233,12 @@ function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
     console.log(e);
   }
   var keysigncreation_process_file_path = `${path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "keysign_signing.bat"
   )}`;
   var content = `call cd "${path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper"
   )}\\commandlinetools-win-10406996_latest\\build-tools\\34.0.0"
 \r\ncall zipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
@@ -252,7 +262,7 @@ async function editAppFromSettings(
   if (use_website) {
     fs.writeFileSync(
       path.resolve(
-        app.getPath("userData"),
+        app.getPath("documents"),
         "Android App Wrapper",
         "capacitor_config",
         "www",
@@ -263,7 +273,7 @@ async function editAppFromSettings(
   }
   fs.writeFileSync(
     path.resolve(
-      app.getPath("userData"),
+      app.getPath("documents"),
       "Android App Wrapper",
       "capacitor_config",
       "capacitor.config.json"
@@ -273,7 +283,7 @@ async function editAppFromSettings(
   if (overwrite_settings) {
     fs.writeFileSync(
       path.resolve(
-        app.getPath("userData"),
+        app.getPath("documents"),
         "Android App Wrapper",
         "capacitor_config",
         "android",
@@ -285,7 +295,7 @@ async function editAppFromSettings(
 }
 async function openFileFolderSelector(e, filters) {
   var apk_path = path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "capacitor_config",
     "android",
@@ -296,7 +306,7 @@ async function openFileFolderSelector(e, filters) {
     "debug"
   );
   var jks_path = path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "jdk-17_windows-x64_bin",
     "jdk-17.0.9",
@@ -344,7 +354,7 @@ async function selectAndShowIMG(event) {
 
 function setupIconsForBuild(event, _paths) {
   let _current_path = path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "capacitor_config",
     "resources"
@@ -389,7 +399,7 @@ function setupIconsForBuild(event, _paths) {
 async function openAndroidManifest() {
   await shell.openPath(
     path.resolve(
-      app.getPath("userData"),
+      app.getPath("documents"),
       "Android App Wrapper",
       "capacitor_config",
       "android",
@@ -402,7 +412,7 @@ async function openAndroidManifest() {
 }
 async function openConfigFolder() {
   await shell.openPath(
-    path.resolve(app.getPath("userData"), "Android App Wrapper")
+    path.resolve(app.getPath("documents"), "Android App Wrapper")
   );
 }
 
@@ -419,12 +429,12 @@ async function runKeyCreationScriptForSign(
   key_alias
 ) {
   var keysigncreation_process_file_path = `${path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper",
     "keysign_creation.bat"
   )}`;
   var content = `call cd "${path.resolve(
-    app.getPath("userData"),
+    app.getPath("documents"),
     "Android App Wrapper"
   )}\\jdk-17_windows-x64_bin\\jdk-17.0.9\\bin"
 \r\ncall keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
@@ -459,7 +469,7 @@ async function runWrappingScript(
   if (clean) {
     fs.rmSync(
       path.resolve(
-        app.getPath("userData"),
+        app.getPath("documents"),
         "Android App Wrapper",
         "capacitor_config",
         "android"
@@ -467,13 +477,13 @@ async function runWrappingScript(
       { recursive: true, force: true }
     );
     wrapping_process_file_path = `${path.resolve(
-      app.getPath("userData"),
+      app.getPath("documents"),
       "Android App Wrapper",
       "app_clean_wrap_apk.bat"
     )}`;
   } else {
     wrapping_process_file_path = `${path.resolve(
-      app.getPath("userData"),
+      app.getPath("documents"),
       "Android App Wrapper",
       fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
     )}`;
