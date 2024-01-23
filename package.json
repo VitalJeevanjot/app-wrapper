@@ -2,7 +2,7 @@
   "name": "AppWebsiteWrapper",
   "version": "0.0.1",
   "description": "Wrap website in android app",
-  "productName": "Electron",
+  "productName": "Android App Wrapper",
   "author": "Jeevanjot Singh <40867747+VitalJeevanjot@users.noreply.github.com>",
   "private": true,
   "scripts": {
