@@ -196,6 +196,7 @@ module.exports = configure(function (/* ctx */) {
           publisherDisplayName: "VitalVictor",
           languages: "en-GB",
         },
+        includeSubNodeModules: true,
       },
     },
 

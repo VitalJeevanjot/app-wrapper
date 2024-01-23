@@ -207,29 +207,7 @@ async function copyFilesForAllProcesses(e) {
       path.resolve(app.getPath("documents"), "Android App Wrapper"),
       { recursive: true, force: true },
       () => {
-        if (
-          fs.existsSync(
-            path.resolve(app.getPath("documents")),
-            "Android App Wrapper",
-            "node_modules"
-          )
-        ) {
-          fs.rename(
-            path.resolve(
-              app.getPath("documents"),
-              "Android App Wrapper",
-              "node_modules"
-            ),
-            path.resolve(
-              app.getPath("documents"),
-              "Android App Wrapper",
-              "node-v20.10.0-win-x64"
-            ),
-            () => {
-              resolve();
-            }
-          );
-        }
+        resolve();
       }
     );
   });
@@ -381,7 +359,11 @@ function setupIconsForBuild(event, _paths) {
     "capacitor_config",
     "resources"
   );
-  fs.rmSync(_current_path, { recursive: true, force: true });
+  try {
+    fs.rmSync(_current_path, { recursive: true, force: true });
+  } catch (e) {
+    console.log(e);
+  }
   if (!fs.existsSync(_current_path)) {
     fs.mkdirSync(_current_path);
   }
