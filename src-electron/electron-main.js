@@ -108,8 +108,8 @@ function createWindow() {
   } else {
     // we're on production; no access to devtools pls
     mainWindow.webContents.on("devtools-opened", () => {
-      mainWindow.webContents.closeDevTools();
-      // mainWindow.webContents.openDevTools();
+      // mainWindow.webContents.closeDevTools();
+      mainWindow.webContents.openDevTools();
     });
   }
 
@@ -150,7 +150,7 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", async () => {
-  console.log("ENDING TERMINAL PROCESS>>>");
+  // console.log("ENDING TERMINAL PROCESS>>>");
   // await bat.stdin.end();
   // await bat.stdout.end();
   // await bat.kill();

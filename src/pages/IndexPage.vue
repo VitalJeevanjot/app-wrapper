@@ -144,6 +144,7 @@
         rounded
         flat
         class="bg-purple q-mx-sm text-white"
+        v-if="!first_build"
         @click="createBuildFromURL"
         >Build</q-btn
       >
@@ -265,6 +266,7 @@ export default defineComponent({
       terminalLogs: null,
       overwrite_settings: true,
       event_listener_added: false,
+      first_build: false,
     };
   },
   methods: {
@@ -353,6 +355,10 @@ export default defineComponent({
       }, 200);
     },
     async createBuildFromURL(fortest, clean) {
+      if (!LocalStorage.getItem("after_first_build")) {
+        LocalStorage.set("after_first_build", true);
+        clean = "clean";
+      }
       if (!this.website_input.trim()) {
         Notify.create({
           message: "⚠️ Website URL required",
@@ -443,6 +449,9 @@ export default defineComponent({
     },
   },
   async mounted() {
+    if (!LocalStorage.getItem("after_first_build")) {
+      this.first_build = true;
+    }
     await this.checkOrCopyFiles();
     this.selectedImages = LocalStorage.getItem("selectedImages");
     if (!this.selectedImages) {

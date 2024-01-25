@@ -191,7 +191,7 @@ module.exports = configure(function (/* ctx */) {
           target: "appx", // or appx or more
         },
         appx: {
-          displayName: "Android App Wrapper",
+          displayName: "App Website Wrapper",
           publisher: "CN=D8EA149B-EABF-46F9-A877-703D35BFD389",
           publisherDisplayName: "VitalVictor",
           languages: "en-GB",
