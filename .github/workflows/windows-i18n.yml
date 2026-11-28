@@ -1,0 +1,57 @@
+name: Windows localization build
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/windows-i18n.yml"
+      - "quasar.config.js"
+      - "src/boot/i18n.js"
+      - "src/i18n/**"
+      - "test/i18n.test.cjs"
+
+permissions:
+  contents: read
+
+jobs:
+  appx:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build -- -m electron -T win32 -A x64
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Check AppX manifest languages
+        shell: pwsh
+        run: |
+          $localeLabels = Get-Content src/i18n/locales.json -Raw | ConvertFrom-Json -AsHashtable
+          $expected = @("en-GB", "en-US") + @($localeLabels.Keys | Where-Object { $_ -ne "en" })
+          $package = Get-ChildItem dist/electron/Packaged -Filter *.appx | Select-Object -First 1
+          if (-not $package) { throw "AppX was not produced" }
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($package.FullName)
+          try {
+            $reader = [System.IO.StreamReader]::new($archive.GetEntry("AppxManifest.xml").Open())
+            try {
+              $manifest = [xml]$reader.ReadToEnd()
+            } finally {
+              $reader.Dispose()
+            }
+          } finally {
+            $archive.Dispose()
+          }
+          $declared = @($manifest.SelectNodes("//*[local-name()='Resources']/*[local-name()='Resource']") |
+            ForEach-Object { $_.GetAttribute("Language") })
+          if (Compare-Object -ReferenceObject $expected -DifferenceObject $declared -CaseSensitive) {
+            throw "Unexpected AppX languages: $($declared -join ', ')"
+          }
+          Write-Output "AppX languages: $($declared -join ', ')"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-appx-i18n
+          path: dist/electron/Packaged/*.appx
+          if-no-files-found: error

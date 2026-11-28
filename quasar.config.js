@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const { configure } = require("quasar/wrappers");
+const locales = require("./src/i18n/locales.json");
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -27,7 +28,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ["axios"],
+    boot: ["axios", "i18n"],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ["app.scss"],
@@ -194,7 +195,7 @@ module.exports = configure(function (/* ctx */) {
           displayName: "App Website Wrapper",
           publisher: "CN=D8EA149B-EABF-46F9-A877-703D35BFD389",
           publisherDisplayName: "VitalVictor",
-          languages: "en-GB",
+          languages: ["en-GB", "en-US", ...Object.keys(locales).filter((locale) => locale !== "en")],
         },
         includeSubNodeModules: true,
       },

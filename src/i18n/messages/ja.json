@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "閉じる",
+    "notSelected": "未選択"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "system": "システムの言語"
+  },
+  "project": {
+    "source": "ウェブサイトのURLまたはプロジェクトフォルダー",
+    "websiteUrl": "ウェブサイトのURLを入力",
+    "directoryPath": "プロジェクトフォルダーを選択",
+    "appId": "アプリID（例：{example}）",
+    "appName": "アプリ名",
+    "targetSdk": "対象SDKのバージョン（例：{example}）",
+    "overwriteSdk": "Gradleの変数ファイルでこの対象SDKを使用",
+    "imageHint": "アップロードする画像を選択してください。アイコンは{iconSize}以上、スプラッシュ画面は{splashSize}以上にしてください。",
+    "imageDetails": "画像の詳細：{image}",
+    "iconOnly": "アイコンのみ",
+    "iconForeground": "アイコンの前景",
+    "iconBackground": "アイコンの背景",
+    "splash": "スプラッシュ画面",
+    "splashDark": "ダークモードのスプラッシュ画面",
+    "build": "ビルド",
+    "cleanBuild": "クリーンビルド",
+    "test": "テスト",
+    "install": "依存関係をインストール",
+    "config": "設定フォルダー",
+    "logs": "最近のログ",
+    "reset": "画像をリセット",
+    "help": "使い方",
+    "websiteRequired": "ウェブサイトのURLを入力してください。",
+    "directoryRequired": "プロジェクトフォルダーを選択してください。",
+    "identityRequired": "アプリIDとアプリ名を入力してください。",
+    "copying": "ファイルをコピーしています…",
+    "copyFailed": "必要なファイルをコピーできませんでした。",
+    "buildFailed": "ビルドを開始できませんでした。"
+  },
+  "signing": {
+    "production": "本番モード",
+    "unsignedApk": "署名されていないAPKを選択",
+    "keystore": "鍵ファイル（{extension}）を選択",
+    "output": "出力先フォルダーを選択",
+    "sign": "署名",
+    "pathsRequired": "APK、鍵ファイル、出力先フォルダーを選択してください。",
+    "createKeyAction": "署名鍵を作成",
+    "createKey": "鍵を作成",
+    "keyName": "鍵の名前",
+    "validity": "鍵の有効期間（日数）",
+    "alias": "鍵のエイリアス",
+    "signFailed": "署名を開始できませんでした。",
+    "keyFailed": "鍵の作成を開始できませんでした。"
+  },
+  "dialogs": {
+    "chooseFile": "ファイルを選択",
+    "chooseFolder": "フォルダーを選択",
+    "chooseImage": "画像を選択",
+    "files": "ファイル",
+    "images": "画像"
+  },
+  "errors": {
+    "notFound": "このページは見つかりませんでした。",
+    "goHome": "ホームに戻る"
+  },
+  "wrapper": {
+    "website": "埋め込まれたウェブサイト"
+  }
+}

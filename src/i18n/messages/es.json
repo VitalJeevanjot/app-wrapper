@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Cerrar",
+    "notSelected": "Sin seleccionar"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "system": "Idioma del sistema"
+  },
+  "project": {
+    "source": "URL del sitio web o carpeta del proyecto",
+    "websiteUrl": "Introduce la URL del sitio web",
+    "directoryPath": "Selecciona una carpeta de proyecto",
+    "appId": "ID de la aplicación (p. ej., {example})",
+    "appName": "Nombre de la aplicación",
+    "targetSdk": "Versión del SDK de destino (p. ej., {example})",
+    "overwriteSdk": "Usar este SDK de destino en el archivo de variables de Gradle",
+    "imageHint": "Selecciona una imagen para cargarla. Los iconos deben tener al menos {iconSize} y las pantallas de inicio, al menos {splashSize}.",
+    "imageDetails": "Detalles de la imagen: {image}",
+    "iconOnly": "Solo icono",
+    "iconForeground": "Primer plano del icono",
+    "iconBackground": "Fondo del icono",
+    "splash": "Pantalla de inicio",
+    "splashDark": "Pantalla de inicio oscura",
+    "build": "Compilar",
+    "cleanBuild": "Compilación limpia",
+    "test": "Probar",
+    "install": "Instalar dependencias",
+    "config": "Carpeta de configuración",
+    "logs": "Registros recientes",
+    "reset": "Restablecer imágenes",
+    "help": "Instrucciones",
+    "websiteRequired": "Introduce una URL del sitio web.",
+    "directoryRequired": "Selecciona una carpeta de proyecto.",
+    "identityRequired": "Introduce el ID y el nombre de la aplicación.",
+    "copying": "Copiando archivos…",
+    "copyFailed": "No se pudieron copiar los archivos necesarios.",
+    "buildFailed": "No se pudo iniciar la compilación."
+  },
+  "signing": {
+    "production": "Producción",
+    "unsignedApk": "Selecciona el APK sin firmar",
+    "keystore": "Selecciona el archivo de clave ({extension})",
+    "output": "Selecciona la carpeta de salida",
+    "sign": "Firmar",
+    "pathsRequired": "Selecciona el APK, el archivo de clave y la carpeta de salida.",
+    "createKeyAction": "Crear una clave de firma",
+    "createKey": "Crear clave",
+    "keyName": "Nombre de la clave",
+    "validity": "Validez de la clave (días)",
+    "alias": "Alias de la clave",
+    "signFailed": "No se pudo iniciar la firma.",
+    "keyFailed": "No se pudo iniciar la creación de la clave."
+  },
+  "dialogs": {
+    "chooseFile": "Seleccionar un archivo",
+    "chooseFolder": "Seleccionar una carpeta",
+    "chooseImage": "Seleccionar una imagen",
+    "files": "Archivos",
+    "images": "Imágenes"
+  },
+  "errors": {
+    "notFound": "No se encontró esta página.",
+    "goHome": "Ir al inicio"
+  },
+  "wrapper": {
+    "website": "Sitio web integrado"
+  }
+}

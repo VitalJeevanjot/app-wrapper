@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Schließen",
+    "notSelected": "Nicht ausgewählt"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "system": "Systemsprache"
+  },
+  "project": {
+    "source": "Website-URL oder Projektordner",
+    "websiteUrl": "Website-URL eingeben",
+    "directoryPath": "Projektordner auswählen",
+    "appId": "App-ID (z. B. {example})",
+    "appName": "App-Name",
+    "targetSdk": "Ziel-SDK-Version (z. B. {example})",
+    "overwriteSdk": "Dieses Ziel-SDK in der Gradle-Variablendatei verwenden",
+    "imageHint": "Wählen Sie ein Bild zum Hochladen aus. App-Symbole müssen mindestens {iconSize} und Startbilder mindestens {splashSize} groß sein.",
+    "imageDetails": "Bilddetails für {image}",
+    "iconOnly": "Nur App-Symbol",
+    "iconForeground": "Symbolvordergrund",
+    "iconBackground": "Symbolhintergrund",
+    "splash": "Startbild",
+    "splashDark": "Dunkles Startbild",
+    "build": "Erstellen",
+    "cleanBuild": "Neu erstellen",
+    "test": "Testen",
+    "install": "Abhängigkeiten installieren",
+    "config": "Konfigurationsordner",
+    "logs": "Letzte Protokolle",
+    "reset": "Bilder zurücksetzen",
+    "help": "Anleitung",
+    "websiteRequired": "Geben Sie eine Website-URL ein.",
+    "directoryRequired": "Wählen Sie einen Projektordner aus.",
+    "identityRequired": "Geben Sie eine App-ID und einen Namen ein.",
+    "copying": "Dateien werden kopiert…",
+    "copyFailed": "Die erforderlichen Dateien konnten nicht kopiert werden.",
+    "buildFailed": "Der Build konnte nicht gestartet werden."
+  },
+  "signing": {
+    "production": "Produktionsmodus",
+    "unsignedApk": "Nicht signierte APK auswählen",
+    "keystore": "Schlüsseldatei auswählen ({extension})",
+    "output": "Ausgabeordner auswählen",
+    "sign": "Signieren",
+    "pathsRequired": "Wählen Sie die APK, die Schlüsseldatei und den Ausgabeordner aus.",
+    "createKeyAction": "Signaturschlüssel erstellen",
+    "createKey": "Schlüssel erstellen",
+    "keyName": "Schlüsselname",
+    "validity": "Gültigkeit des Schlüssels (Tage)",
+    "alias": "Schlüsselalias",
+    "signFailed": "Die Signierung konnte nicht gestartet werden.",
+    "keyFailed": "Die Schlüsselerstellung konnte nicht gestartet werden."
+  },
+  "dialogs": {
+    "chooseFile": "Datei auswählen",
+    "chooseFolder": "Ordner auswählen",
+    "chooseImage": "Bild auswählen",
+    "files": "Dateien",
+    "images": "Bilder"
+  },
+  "errors": {
+    "notFound": "Diese Seite wurde nicht gefunden.",
+    "goHome": "Zur Startseite"
+  },
+  "wrapper": {
+    "website": "Eingebettete Website"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Tutup",
+    "notSelected": "Belum dipilih"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "system": "Bahasa sistem"
+  },
+  "project": {
+    "source": "URL situs web atau folder proyek",
+    "websiteUrl": "Masukkan URL situs web",
+    "directoryPath": "Pilih folder proyek",
+    "appId": "ID aplikasi (mis. {example})",
+    "appName": "Nama aplikasi",
+    "targetSdk": "Versi SDK target (mis. {example})",
+    "overwriteSdk": "Gunakan SDK target ini pada file variabel Gradle",
+    "imageHint": "Pilih gambar untuk diunggah. Ikon harus berukuran minimal {iconSize} dan layar pembuka minimal {splashSize}.",
+    "imageDetails": "Detail gambar: {image}",
+    "iconOnly": "Ikon saja",
+    "iconForeground": "Latar depan ikon",
+    "iconBackground": "Latar belakang ikon",
+    "splash": "Layar pembuka",
+    "splashDark": "Layar pembuka gelap",
+    "build": "Kompilasi",
+    "cleanBuild": "Kompilasi bersih",
+    "test": "Uji",
+    "install": "Instal dependensi",
+    "config": "Folder konfigurasi",
+    "logs": "Log terbaru",
+    "reset": "Reset gambar",
+    "help": "Cara penggunaan",
+    "websiteRequired": "Masukkan URL situs web.",
+    "directoryRequired": "Pilih folder proyek.",
+    "identityRequired": "Masukkan ID dan nama aplikasi.",
+    "copying": "Menyalin file…",
+    "copyFailed": "Tidak dapat menyalin file yang diperlukan.",
+    "buildFailed": "Tidak dapat memulai kompilasi."
+  },
+  "signing": {
+    "production": "Produksi",
+    "unsignedApk": "Pilih APK yang belum ditandatangani",
+    "keystore": "Pilih file kunci ({extension})",
+    "output": "Pilih folder keluaran",
+    "sign": "Tandatangani",
+    "pathsRequired": "Pilih APK, file kunci, dan folder keluaran.",
+    "createKeyAction": "Buat kunci penandatanganan",
+    "createKey": "Buat kunci",
+    "keyName": "Nama kunci",
+    "validity": "Masa berlaku kunci (hari)",
+    "alias": "Alias kunci",
+    "signFailed": "Tidak dapat memulai penandatanganan.",
+    "keyFailed": "Tidak dapat mulai membuat kunci."
+  },
+  "dialogs": {
+    "chooseFile": "Pilih file",
+    "chooseFolder": "Pilih folder",
+    "chooseImage": "Pilih gambar",
+    "files": "File",
+    "images": "Gambar"
+  },
+  "errors": {
+    "notFound": "Halaman ini tidak ditemukan.",
+    "goHome": "Ke beranda"
+  },
+  "wrapper": {
+    "website": "Situs web tersemat"
+  }
+}

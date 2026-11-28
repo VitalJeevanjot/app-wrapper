@@ -1,62 +1,67 @@
 <template>
   <div class="row justify-center q-mt-sm">
     <q-toggle
-      label="Production"
+      :label="$t('signing.production')"
       v-model="productionModeToggle"
       color="grey-9"
       keep-color
     />
   </div>
 
-  <div v-if="productionModeToggle">
-    <div class="row justify-center q-mt-sm">
+  <div v-if="productionModeToggle" class="column items-center">
+    <div class="app-field q-mt-sm">
+      <label class="app-field-label" for="unsigned-apk">{{ $t("signing.unsignedApk") }}</label>
       <q-input
         outlined
         readonly
+        for="unsigned-apk"
         v-model="unsigned_apk_path"
-        label="Click to select unsigned apk"
         color="black"
-        style="width: 60vw; min-width: 250px"
         @click="selectUnsignedApkPath"
+        @keydown.enter.prevent="selectUnsignedApkPath"
       />
     </div>
-    <div class="row justify-center q-mt-sm">
+    <div class="app-field q-mt-sm">
+      <label class="app-field-label" for="key-file">
+        {{ $t("signing.keystore", { extension: ".jks" }) }}
+      </label>
       <q-input
         outlined
         readonly
+        for="key-file"
         v-model="key_path"
-        label="Click to select key file (.jks)"
         color="black"
-        style="width: 60vw; min-width: 250px"
         @click="selectKeyPath"
+        @keydown.enter.prevent="selectKeyPath"
       />
     </div>
-    <div class="row justify-center q-mt-sm">
+    <div class="app-field q-mt-sm">
+      <label class="app-field-label" for="output-folder">{{ $t("signing.output") }}</label>
       <q-input
         outlined
         readonly
+        for="output-folder"
         v-model="output_path"
-        label="Click to select output path"
         color="black"
-        style="width: 60vw; min-width: 250px"
         @click="selectOutputPath"
+        @keydown.enter.prevent="selectOutputPath"
       />
     </div>
 
-    <div class="row justify-center q-mt-sm">
-      <q-btn
-        rounded
-        flat
-        class="bg-orange q-mx-sm text-white"
-        @click="createSignedAPK"
-        >Sign</q-btn
-      >
-    </div>
+    <q-btn
+      rounded
+      flat
+      no-caps
+      class="bg-orange q-mt-sm text-white app-action"
+      :label="$t('signing.sign')"
+      @click="createSignedAPK"
+    />
   </div>
 </template>
 
 <script>
 import { Notify } from "quasar";
+
 export default {
   name: "ProductionBase",
   data() {
@@ -69,28 +74,39 @@ export default {
   },
   methods: {
     async selectUnsignedApkPath() {
-      this.unsigned_apk_path =
-        await window.AppWrapperAPI.openFileFolderSelector(["apk"]);
+      const chosen = await window.AppWrapperAPI.openFileFolderSelector(
+        ["apk"], this.$t("dialogs.chooseFile"), this.$t("dialogs.files")
+      );
+      if (chosen) this.unsigned_apk_path = chosen;
     },
     async selectKeyPath() {
-      this.key_path = await window.AppWrapperAPI.openFileFolderSelector([
-        "jks",
-      ]);
+      const chosen = await window.AppWrapperAPI.openFileFolderSelector(
+        ["jks"], this.$t("dialogs.chooseFile"), this.$t("dialogs.files")
+      );
+      if (chosen) this.key_path = chosen;
     },
     async selectOutputPath() {
-      this.output_path = await window.AppWrapperAPI.openFileFolderSelector();
+      const chosen = await window.AppWrapperAPI.openFileFolderSelector(
+        undefined, this.$t("dialogs.chooseFolder")
+      );
+      if (chosen) this.output_path = chosen;
     },
     async createSignedAPK() {
       if (!this.key_path || !this.unsigned_apk_path || !this.output_path) {
-        Notify.create("⚠️ Missing required path(s)");
+        Notify.create(this.$t("signing.pathsRequired"));
         return;
       }
 
-      await window.AppWrapperAPI.runSigningScript(
-        this.unsigned_apk_path,
-        this.key_path,
-        this.output_path
-      );
+      try {
+        await window.AppWrapperAPI.runSigningScript(
+          this.unsigned_apk_path,
+          this.key_path,
+          this.output_path
+        );
+      } catch (error) {
+        console.error(error);
+        Notify.create({ message: this.$t("signing.signFailed"), type: "negative" });
+      }
     },
   },
 };

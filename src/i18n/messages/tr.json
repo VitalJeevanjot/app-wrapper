@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Kapat",
+    "notSelected": "Seçilmedi"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "language": "Dil",
+    "system": "Sistem dili"
+  },
+  "project": {
+    "source": "Web sitesi URL’si veya proje klasörü",
+    "websiteUrl": "Web sitesi URL’sini girin",
+    "directoryPath": "Proje klasörü seçin",
+    "appId": "Uygulama kimliği (ör. {example})",
+    "appName": "Uygulama adı",
+    "targetSdk": "Hedef SDK sürümü (ör. {example})",
+    "overwriteSdk": "Gradle değişken dosyasında bu hedef SDK’yı kullan",
+    "imageHint": "Yüklemek için bir görsel seçin. Simgeler en az {iconSize}, açılış ekranları en az {splashSize} olmalıdır.",
+    "imageDetails": "Görsel ayrıntıları: {image}",
+    "iconOnly": "Yalnızca simge",
+    "iconForeground": "Simge ön planı",
+    "iconBackground": "Simge arka planı",
+    "splash": "Açılış ekranı",
+    "splashDark": "Koyu açılış ekranı",
+    "build": "Derle",
+    "cleanBuild": "Temiz derleme",
+    "test": "Test et",
+    "install": "Bağımlılıkları kur",
+    "config": "Yapılandırma klasörü",
+    "logs": "Son günlükler",
+    "reset": "Görselleri sıfırla",
+    "help": "Kullanım kılavuzu",
+    "websiteRequired": "Web sitesi URL’sini girin.",
+    "directoryRequired": "Bir proje klasörü seçin.",
+    "identityRequired": "Uygulama kimliğini ve adını girin.",
+    "copying": "Dosyalar kopyalanıyor…",
+    "copyFailed": "Gerekli dosyalar kopyalanamadı.",
+    "buildFailed": "Derleme başlatılamadı."
+  },
+  "signing": {
+    "production": "Üretim",
+    "unsignedApk": "İmzalanmamış APK’yı seçin",
+    "keystore": "Anahtar dosyasını seçin ({extension})",
+    "output": "Çıktı klasörünü seçin",
+    "sign": "İmzala",
+    "pathsRequired": "APK’yı, anahtar dosyasını ve çıktı klasörünü seçin.",
+    "createKeyAction": "İmzalama anahtarı oluştur",
+    "createKey": "Anahtar oluştur",
+    "keyName": "Anahtar adı",
+    "validity": "Anahtar geçerlilik süresi (gün)",
+    "alias": "Anahtar takma adı",
+    "signFailed": "İmzalama başlatılamadı.",
+    "keyFailed": "Anahtar oluşturma başlatılamadı."
+  },
+  "dialogs": {
+    "chooseFile": "Dosya seçin",
+    "chooseFolder": "Klasör seçin",
+    "chooseImage": "Görsel seçin",
+    "files": "Dosyalar",
+    "images": "Görseller"
+  },
+  "errors": {
+    "notFound": "Bu sayfa bulunamadı.",
+    "goHome": "Ana sayfaya dön"
+  },
+  "wrapper": {
+    "website": "Gömülü web sitesi"
+  }
+}

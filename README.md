@@ -53,7 +53,7 @@ The Store build ships three toolchains next to the scripts. Only Node.js is comm
 - JDK 17, unpacked to `public/jdk-17_windows-x64_bin/jdk-17.0.9`
 - Android command-line tools, unpacked to `public/commandlinetools-win-10406996_latest`
 
-Then:
+Use Node.js 22, 24, or 26 to build the desktop app. Then run:
 
 ```bash
 yarn

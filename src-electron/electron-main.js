@@ -6,34 +6,42 @@ import {
   nativeImage,
   shell,
 } from "electron";
-const { exec, spawn } = require("node:child_process");
+const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 import path from "path";
 import os from "os";
-import { execSync, spawnSync } from "child_process";
+const english = require("../src/i18n/messages/en.json");
+const locales = require("../src/i18n/locales.json");
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
 
 let mainWindow;
 
-function getHTMLwithURL(url) {
+function escapeHtml(value) {
+  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function getHTMLwithURL(url, appName, view) {
+  const locale = Object.prototype.hasOwnProperty.call(locales, view?.locale) ? view.locale : "en";
+  const websiteTitle = typeof view?.websiteTitle === "string" ? view.websiteTitle : english.wrapper.website;
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>${escapeHtml(appName)}</title>
   </head>
   <body style="margin: 0px; padding: 0px; overflow: hidden">
     <iframe
-      title="Testing"
+      title="${escapeHtml(websiteTitle)}"
       height=""
       allowtransparency="true"
       width=""
       frameborder="0"
       id="iframe"
-      src="${url}"
+      src="${escapeHtml(url)}"
       style="pointer-events: auto"
     ></iframe>
   </body>
@@ -118,9 +126,11 @@ function createWindow() {
   });
 }
 
-var terminal_logs = null;
+var terminal_logs = "";
+let terminalExited = false;
 var bat = null;
 app.whenReady().then(() => {
+  ipcMain.handle("get-locale", () => app.getLocale());
   // setupTerminalInstanceAndPathsBatchFile();
   // ipcMain.handle("get-public-path", getPublicPath);
   ipcMain.handle("run-script", runScript);
@@ -257,7 +267,8 @@ async function editAppFromSettings(
   app_name,
   target_sdk_ver,
   overwrite_settings,
-  use_website
+  use_website,
+  view
 ) {
   if (use_website) {
     fs.writeFileSync(
@@ -268,7 +279,7 @@ async function editAppFromSettings(
         "www",
         "index.html"
       ),
-      getHTMLwithURL(website_URL)
+      getHTMLwithURL(website_URL, app_name, view)
     );
   }
   fs.writeFileSync(
@@ -293,7 +304,7 @@ async function editAppFromSettings(
     );
   }
 }
-async function openFileFolderSelector(e, filters) {
+async function openFileFolderSelector(e, filters, title, filterName) {
   var apk_path = path.resolve(
     app.getPath("documents"),
     "Android App Wrapper",
@@ -316,16 +327,15 @@ async function openFileFolderSelector(e, filters) {
   async function getPaths(filters) {
     if (filters) {
       return await dialog.showOpenDialog({
-        title: "Select directories with jpg/png",
+        title: title || english.dialogs.chooseFile,
         properties: ["openFile"],
         defaultPath: filters[0] == "apk" ? apk_path : jks_path,
-        filters: [{ name: "Files", extensions: filters }],
+        filters: [{ name: filterName || english.dialogs.files, extensions: filters }],
       });
     } else {
       return await dialog.showOpenDialog({
-        title: "Select directories with jpg/png",
+        title: title || english.dialogs.chooseFolder,
         properties: ["openDirectory"],
-        filters: [{ name: "Output" }],
       });
     }
   }
@@ -333,11 +343,11 @@ async function openFileFolderSelector(e, filters) {
     return filePaths[0];
   }
 }
-async function selectAndShowIMG(event) {
+async function selectAndShowIMG(event, title, filterName) {
   const { canceled, filePaths } = await dialog.showOpenDialog({
-    title: "Select directories with jpg/png",
+    title: title || english.dialogs.chooseImage,
     properties: ["openFile"],
-    filters: [{ name: "Images", extensions: ["jpg", "png"] }],
+    filters: [{ name: filterName || english.dialogs.images, extensions: ["jpg", "png"] }],
   });
 
   if (!canceled) {
@@ -421,9 +431,9 @@ async function openConfigFolder() {
 }
 
 async function getOutputForTerminal() {
-  let output = terminal_logs;
-  terminal_logs = "\r\n";
-  return output;
+  const output = terminal_logs;
+  terminal_logs = "";
+  return { output, exited: terminalExited };
 }
 
 async function runKeyCreationScriptForSign(
@@ -458,7 +468,8 @@ async function runWrappingScript(
   overwrite_settings,
   use_website,
   fortest,
-  clean
+  clean,
+  view
 ) {
   await editAppFromSettings(
     website_URL,
@@ -467,7 +478,7 @@ async function runWrappingScript(
     target_sdk_ver,
     overwrite_settings,
     use_website,
-    fortest
+    view
   );
   var wrapping_process_file_path = null;
   if (clean) {
@@ -497,42 +508,46 @@ async function runWrappingScript(
 
 function setupTerminalProcess(file_path) {
   killTerminalProcess();
-  bat = spawn(file_path);
-  terminal_logs = null;
-  bat.stdout.on("data", (data) => {
-    // console.log(`${data.toString()}`);
-    // console.log(data.toString().indexOf("png"));
-    // console.log(data.toString().split(/\n/g));
-    // console.log(
-    //   data.toString().charCodeAt(data.toString().indexOf("png") + 14)
-    // );
-    // console.log("================================");
-    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
-  });
-  bat.stderr.on("data", (data) => {
-    // console.log(data.toString());
-    // console.log(data.toString().charCodeAt(data.length - 1));
-    // console.log("--------------------------------------------------------");
-    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
-  });
+  terminal_logs = "";
+  terminalExited = false;
 
-  bat.on("close", (code) => {
-    if (!code) {
-      var _exit_message = `\r\nprocess exited with code "x"`;
-    } else {
-      var _exit_message = `\r\nprocess exited with code ${code}`;
-    }
-    terminal_logs += `${_exit_message.toString()}`;
-    shell.openPath(getPathOfOutput());
-    // console.log("________________________________________________");
-    // console.log(_exit_message);
+  const cmd = path.join(process.env.SystemRoot, "System32", "cmd.exe");
+  const javaOptions = [process.env.JAVA_TOOL_OPTIONS, "-Duser.language=en -Duser.country=US"];
+  const child = spawn(cmd, ["/d", "/c", path.basename(file_path)], {
+    cwd: path.dirname(file_path),
+    windowsHide: true,
+    env: {
+      ...process.env,
+      LANG: "en_US.UTF-8",
+      LC_ALL: "en_US.UTF-8",
+      LANGUAGE: "en",
+      JAVA_TOOL_OPTIONS: javaOptions.filter(Boolean).join(" "),
+    },
+  });
+  bat = child;
+
+  const log = (data) => {
+    if (bat === child) terminal_logs += data.toString().replace(/\r?\n/g, "\r\n");
+  };
+  child.stdout.on("data", log);
+  child.stderr.on("data", log);
+  child.stdin.on("error", console.error);
+  child.on("error", (error) => {
+    console.error(error);
+    log(`${english.terminal.startFailed}\r\n`);
+  });
+  child.on("close", (code, signal) => {
+    if (bat !== child) return;
+
+    log(`\r\n${english.terminal.exit.replace("{code}", () => String(code ?? signal ?? -1))}`);
+    terminalExited = true;
+    bat = null;
+    if (code === 0) shell.openPath(getPathOfOutput());
   });
 }
 
 function sendInputToTerminal(event, escapeCode) {
-  console.log("escapeCode: ");
-  console.log(escapeCode);
-  bat.stdin.write(escapeCode);
+  if (bat?.stdin.writable) bat.stdin.write(escapeCode);
 }
 
 async function runScript(e, _command) {

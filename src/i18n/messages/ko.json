@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "닫기",
+    "notSelected": "선택되지 않음"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "system": "시스템 언어"
+  },
+  "project": {
+    "source": "웹사이트 URL 또는 프로젝트 폴더",
+    "websiteUrl": "웹사이트 URL 입력",
+    "directoryPath": "프로젝트 폴더 선택",
+    "appId": "앱 ID(예: {example})",
+    "appName": "앱 이름",
+    "targetSdk": "대상 SDK 버전(예: {example})",
+    "overwriteSdk": "Gradle 변수 파일에 이 대상 SDK 사용",
+    "imageHint": "업로드할 이미지를 선택하세요. 아이콘은 최소 {iconSize}, 시작 화면은 최소 {splashSize}여야 합니다.",
+    "imageDetails": "이미지 세부 정보: {image}",
+    "iconOnly": "아이콘만",
+    "iconForeground": "아이콘 전경",
+    "iconBackground": "아이콘 배경",
+    "splash": "시작 화면",
+    "splashDark": "어두운 시작 화면",
+    "build": "빌드",
+    "cleanBuild": "클린 빌드",
+    "test": "테스트",
+    "install": "종속 항목 설치",
+    "config": "구성 폴더",
+    "logs": "최근 로그",
+    "reset": "이미지 초기화",
+    "help": "사용 방법",
+    "websiteRequired": "웹사이트 URL을 입력하세요.",
+    "directoryRequired": "프로젝트 폴더를 선택하세요.",
+    "identityRequired": "앱 ID와 이름을 입력하세요.",
+    "copying": "파일 복사 중…",
+    "copyFailed": "필요한 파일을 복사할 수 없습니다.",
+    "buildFailed": "빌드를 시작할 수 없습니다."
+  },
+  "signing": {
+    "production": "프로덕션",
+    "unsignedApk": "서명되지 않은 APK 선택",
+    "keystore": "키 파일 선택({extension})",
+    "output": "출력 폴더 선택",
+    "sign": "서명",
+    "pathsRequired": "APK, 키 파일 및 출력 폴더를 선택하세요.",
+    "createKeyAction": "서명 키 만들기",
+    "createKey": "키 만들기",
+    "keyName": "키 이름",
+    "validity": "키 유효 기간(일)",
+    "alias": "키 별칭",
+    "signFailed": "서명을 시작할 수 없습니다.",
+    "keyFailed": "키 생성을 시작할 수 없습니다."
+  },
+  "dialogs": {
+    "chooseFile": "파일 선택",
+    "chooseFolder": "폴더 선택",
+    "chooseImage": "이미지 선택",
+    "files": "파일",
+    "images": "이미지"
+  },
+  "errors": {
+    "notFound": "이 페이지를 찾을 수 없습니다.",
+    "goHome": "홈으로 이동"
+  },
+  "wrapper": {
+    "website": "포함된 웹사이트"
+  }
+}
