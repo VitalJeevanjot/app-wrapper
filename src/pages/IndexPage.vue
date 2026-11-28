@@ -241,7 +241,7 @@
 </style>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import { Loading, LocalStorage, Notify } from "quasar";
 import { Terminal } from "xterm";
 import ProductionBase from "components/ProductionBase.vue";
@@ -356,10 +356,9 @@ export default defineComponent({
     },
     async createBuildFromURL(fortest, clean) {
       if (!LocalStorage.getItem("after_first_build")) {
-        LocalStorage.set("after_first_build", true);
         clean = "clean";
       }
-      if (!this.website_input.trim()) {
+      if (!this.website_input?.trim()) {
         Notify.create({
           message: "⚠️ Website URL required",
           color: "black",
@@ -376,24 +375,25 @@ export default defineComponent({
         return;
       }
 
-      await window.AppWrapperAPI.setupIcons(
-        JSON.stringify(this.selectedImages)
-      );
-      document.addEventListener("keyup", this.sendKeyToTerminal);
-      this.event_listener_added = true;
-      this.showTerminalLogs();
-      await window.AppWrapperAPI.runWrappingScript(
-        this.website_input,
-        this.app_id_input,
-        this.app_name_input,
-        this.target_sdk_version_input,
-        this.overwrite_settings,
-        this.use_website,
-        fortest,
-        clean
-      );
-
-      // await window.AppWrapperAPI.buildAppFromURL(this.website_input);
+      try {
+        await window.AppWrapperAPI.setupIcons(JSON.stringify(this.selectedImages));
+        await window.AppWrapperAPI.runWrappingScript(
+          this.website_input,
+          this.app_id_input,
+          this.app_name_input,
+          this.target_sdk_version_input,
+          this.overwrite_settings,
+          this.use_website,
+          fortest,
+          clean
+        );
+        LocalStorage.set("after_first_build", true);
+        document.addEventListener("keyup", this.sendKeyToTerminal);
+        this.event_listener_added = true;
+        this.showTerminalLogs();
+      } catch (error) {
+        Notify.create({ message: error.message, type: "negative" });
+      }
     },
     async addImage(_index) {
       let img_data = await window.AppWrapperAPI.selectAndShowImage();
@@ -438,12 +438,14 @@ export default defineComponent({
       return imgData[index];
     },
     async checkOrCopyFiles(manually) {
-      if (LocalStorage.getItem("filesCopied") && !manually) {
-        return;
-      } else {
-        Loading.show({ message: "Copying files...." });
+      if (LocalStorage.getItem("toolchainFilesCopied") && !manually) return;
+      Loading.show({ message: "Copying files…" });
+      try {
         await window.AppWrapperAPI.copyFilesForAllProcesses();
-        LocalStorage.set("filesCopied", true);
+        LocalStorage.set("toolchainFilesCopied", true);
+      } catch (error) {
+        Notify.create({ message: error.message, type: "negative" });
+      } finally {
         Loading.hide();
       }
     },

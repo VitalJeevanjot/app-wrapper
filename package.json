@@ -8,9 +8,11 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0",
+    "test": "node --test",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build -m electron -T win32 -A x64",
+    "fetch:toolchain": "node scripts/fetch-toolchain.cjs",
+    "prebuild": "npm run fetch:toolchain"
   },
   "dependencies": {
     "@capacitor/core": "^5.6.0",
@@ -35,8 +37,8 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "^18 || ^16 || ^14.19",
-    "npm": ">= 6.13.4",
-    "yarn": ">= 1.21.1"
+    "node": "^22 || ^24 || ^26",
+    "npm": ">=10",
+    "yarn": ">=1.22"
   }
 }

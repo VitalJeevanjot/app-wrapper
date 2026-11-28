@@ -1,39 +1,32 @@
-@REM set "NODE_PATH=C:\Users\User\Downloads\node-v20.10.0-win-x64\node-v20.10.0-win-x64"
-cd %~dp0
+@echo off
+cd /d "%~dp0" || exit /b 1
+setlocal DisableDelayedExpansion
+call .\path_setup.bat || (
+  echo Missing build tools. Use Install Dependencies to copy the bundled tools.
+  exit /b 1
+)
+cd /d "%~dp0capacitor_config" || exit /b 1
 
-set "NODE_PATH=%cd%\node-v20.10.0-win-x64"
-@REM set "COMMAND_LINE_TOOLS_PATH=C:\Users\User\Downloads\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
-set "COMMAND_LINE_TOOLS_PATH=%cd%\commandlinetools-win-10406996_latest\cmdline-tools\latest\bin"
-@ REM rem Add the temporary paths to the existing PATH variable
-set PATH=%NODE_PATH%;%COMMAND_LINE_TOOLS_PATH%;%PATH%
+if not exist "node_modules\.bin\cap.cmd" goto install
+if not exist "node_modules\.bin\capacitor-assets.cmd" goto install
+goto prepare
 
+:install
+node "%TOOLCHAIN%\node\node_modules\npm\bin\npm-cli.js" install --no-audit --no-fund || exit /b 1
 
+:prepare
+if "%~1"=="clean" if exist android rmdir /s /q android
+if "%~1"=="clean" if exist android exit /b 1
+if not exist android node "%TOOLCHAIN%\node\node_modules\npm\bin\npm-cli.js" exec --no -- cap add android || exit /b 1
+if exist "wrapper-variables.gradle" copy /y "wrapper-variables.gradle" "android\variables.gradle" || exit /b 1
 
-set "JAVA_HOME=%cd%\jdk-17_windows-x64_bin\jdk-17.0.9"
-@REM echo %JAVA_HOME%
-@ REM rem Set a new environment variable with the specified path
+node "%TOOLCHAIN%\node\node_modules\npm\bin\npm-cli.js" exec --no -- capacitor-assets generate || exit /b 1
+node "%TOOLCHAIN%\node\node_modules\npm\bin\npm-cli.js" exec --no -- cap sync || exit /b 1
+if "%~1"=="test" (
+  node "%TOOLCHAIN%\node\node_modules\npm\bin\npm-cli.js" exec --no -- cap run android
+  exit /b
+)
 
-set "ANDROID_HOME=%cd%\commandlinetools-win-10406996_latest"
-set "ANDROID_SDK_ROOT=%cd%\commandlinetools-win-10406996_latest"
-@ REM rem Set a new environment variable with the specified path
-
-
-@REM sdkmanager.bat "platform-tools"
-@REM  sdkmanager.bat "build-tools;34.0.0"
-@REM  sdkmanager.bat "platforms;android-33"
-
-call node -v
-cd capacitor_config
-cd
-@REM echo "DONE ON...."
-@REM echo "Printing current path............................"
-cd
-@REM call npx capacitor-assets generate
-@REM @REM call npx cap sync
-@REM call npx cap run android
-
-
-@REM @REM cd android
-@REM @REM call gradlew.bat assembleDebug
-@REM echo "DONE OFF...."
-@REM cd ..
+cd android || exit /b 1
+call gradlew.bat clean assembleDebug
+exit /b

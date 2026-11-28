@@ -2,6 +2,8 @@ commandlinetools-win-10406996_latest
 jdk-17_windows-x64_bin
 node-v20.10.0-win-x64
 capacitor_config
+/public/toolchain/
+/.toolchain-*/
 
 .DS_Store
 .thumbs.db

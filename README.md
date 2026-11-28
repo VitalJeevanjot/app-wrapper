@@ -22,15 +22,15 @@ flowchart LR
   UI["Renderer: Vue 3 + Quasar"] -->|"contextBridge IPC"| MAIN["Main process"]
   MAIN -->|"copy scripts and tools"| DOCS["Documents/Android App Wrapper"]
   MAIN -->|"write config, icons, index.html"| CAP["capacitor_config project"]
-  MAIN -->|"spawn .bat"| TOOLS["Node.js, Capacitor CLI, Gradle, JDK 17, Android SDK tools"]
+  MAIN -->|"run build scripts"| TOOLS["Node.js, Capacitor CLI, Gradle, JDK 17, Android SDK"]
   TOOLS -->|"stdout and stderr"| UI
-  TOOLS --> APK["Signed APK"]
+  MAIN -->|"run signing tools"| APK["Signed APK"]
 ```
 
-1. On first run, the main process copies the build scripts and tool folders from `public/` into `Documents/Android App Wrapper`, so builds run from a writable folder.
-2. Each build step is a batch script (`app_clean_wrap_apk.bat`, `app_wrap_apk.bat`, `app_test_apk.bat`) that puts the bundled Node.js, JDK and Android command-line tools on `PATH` for that process only. Nothing is installed system-wide.
-3. The main process starts the script with `spawn`, forwards its output to the renderer, and accepts input or a kill request over IPC.
-4. Signing runs as two more scripts, `keysign_creation.bat` and `keysign_signing.bat`.
+1. On first run, the main process copies the build scripts and toolchain into `Documents/Android App Wrapper`, where the app can build APKs. Use **Install Dependencies** to refresh the bundled tools.
+2. The build scripts select the bundled Node.js, JDK 17 and Android SDK for that process. They install the Capacitor project dependencies on the first build.
+3. The main process forwards build output to the renderer and accepts input or a stop request over IPC.
+4. Key creation and signing use the bundled `keytool.exe`, `zipalign.exe` and `apksigner.jar` with separate arguments. The app stores new keys in `Documents/Android App Wrapper/signing-keys`. Existing keys can still be selected from their original locations.
 
 The renderer runs with `contextIsolation` on and reaches the main process only through the IPC calls in `src-electron/electron-preload.js`.
 
@@ -38,30 +38,46 @@ The renderer runs with `contextIsolation` on and reaches the main process only t
 
 | Path | Contents |
 | --- | --- |
-| `src-electron/electron-main.js` | Window, IPC handlers, config writers, build and signing scripts |
+| `src-electron/electron-main.js` | Window and IPC handlers for building and signing |
 | `src-electron/electron-preload.js` | The API exposed to the renderer |
 | `src/pages/IndexPage.vue` | The build form and the terminal pane |
 | `src/components/ProductionBase.vue` | Production mode: pick the unsigned APK and key, then sign |
 | `src/components/CreateKeyToSign.vue` | Signing key creation |
-| `public/*.bat` | Build and signing scripts copied to the user's Documents folder |
-| `public/node-v20.10.0-win-x64` | The Node.js runtime bundled with the app |
+| `src-electron/main-process.cjs` and `signing.cjs` | Paths, validation, settings writers and signing commands |
+| `public/*.bat` | Android project setup and build scripts |
+| `scripts/fetch-toolchain.cjs` | Fetches and checks the Windows toolchain archives |
 
 ## Building it yourself
 
-The Store build ships three toolchains next to the scripts. Only Node.js is committed here, so add the other two before building:
+Build and run the desktop app on **Windows 10 or 11 x64**. Install Git and a supported Node.js LTS release (22, 24 or 26) with npm 10 or newer. The toolchain download uses the `tar.exe` included with Windows. The first build needs internet access and several GB of disk space.
 
-- JDK 17, unpacked to `public/jdk-17_windows-x64_bin/jdk-17.0.9`
-- Android command-line tools, unpacked to `public/commandlinetools-win-10406996_latest`
+From the repository root in PowerShell:
 
-Then:
-
-```bash
-yarn
-quasar dev -m electron     # run in development
-quasar build -m electron   # build the AppX package
+```powershell
+npm ci
+npm run fetch:toolchain
+npm test
+npm run build
 ```
 
-The app targets Windows: the build steps are batch files.
+The download script installs the current Windows x64 Node.js LTS, Temurin JDK 17 and Google's Android command-line tools under `public/toolchain/`. It checks each archive's SHA-256 before unpacking. `npm run build` runs the same script automatically and reuses the verified installations when their published checksums match.
+
+The Windows x64 AppX is written to `dist/electron/Packaged/`. Use an appropriate signing certificate if you need to sideload the AppX. For development, run `npm run dev -- -m electron` after fetching the toolchain.
+
+### Android SDK packages
+
+To build and sign APKs with the desktop app, use `sdkmanager` to accept the Android SDK licenses and install Platform Tools, a platform matching the target SDK, and Build Tools. The APK form defaults to API 33. To include these packages in a desktop build, run the following before `npm run build`:
+
+```powershell
+$toolchain = (Resolve-Path .\public\toolchain).Path
+$env:JAVA_HOME = Join-Path $toolchain "jdk"
+$sdk = Join-Path $toolchain "android-sdk"
+$sdkmanager = Join-Path $sdk "cmdline-tools\latest\bin\sdkmanager.bat"
+& $sdkmanager "--sdk_root=$sdk" --licenses
+& $sdkmanager "--sdk_root=$sdk" "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+```
+
+For an existing desktop installation, use **Install Dependencies** and set `$toolchain` to the `Android App Wrapper\toolchain` folder in Documents before running the same SDK setup commands. Install the corresponding SDK platform if you change the target API. The first APK build also downloads the project's Capacitor dependencies and Gradle.
 
 ## License
 

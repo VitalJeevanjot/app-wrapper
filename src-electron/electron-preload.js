@@ -91,23 +91,27 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   getPathOfOutput: async () => {
     return await ipcRenderer.invoke("get-output-path");
   },
-  runKeyCreationScriptForSign: async (key_name, key_validity, key_alias) => {
-    return await ipcRenderer.invoke(
+  runKeyCreationScriptForSign: (key_name, key_validity, key_alias, owner, password) => {
+    return ipcRenderer.invoke(
       "run-key-creation-script-for-sign",
       key_name,
       key_validity,
-      key_alias
+      key_alias,
+      owner,
+      password
     );
   },
   openFileFolderSelector: async (filters) => {
     return await ipcRenderer.invoke("open-file-folder-selector", filters);
   },
-  runSigningScript: async (unsigned_apk_path, key_path, output_path) => {
-    await ipcRenderer.invoke(
+  runSigningScript: (unsigned_apk_path, key_path, output_path, password, keyPassword) => {
+    return ipcRenderer.invoke(
       "run-script-to-sign",
       unsigned_apk_path,
       key_path,
-      output_path
+      output_path,
+      password,
+      keyPassword
     );
   },
   copyFilesForAllProcesses: async () => {

@@ -44,11 +44,33 @@
     </div>
 
     <div class="row justify-center q-mt-sm">
+      <q-input
+        outlined
+        v-model="keystorePassword"
+        type="password"
+        label="Keystore password"
+        color="black"
+        style="width: 60vw; min-width: 250px"
+      />
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-input
+        outlined
+        v-model="keyPassword"
+        type="password"
+        label="Key password (if different)"
+        color="black"
+        style="width: 60vw; min-width: 250px"
+      />
+    </div>
+
+    <div class="row justify-center q-mt-sm">
       <q-btn
         rounded
         flat
         class="bg-orange q-mx-sm text-white"
         @click="createSignedAPK"
+        :loading="signing"
         >Sign</q-btn
       >
     </div>
@@ -65,6 +87,9 @@ export default {
       unsigned_apk_path: "",
       key_path: "",
       output_path: "",
+      keystorePassword: "",
+      keyPassword: "",
+      signing: false,
     };
   },
   methods: {
@@ -86,11 +111,23 @@ export default {
         return;
       }
 
-      await window.AppWrapperAPI.runSigningScript(
-        this.unsigned_apk_path,
-        this.key_path,
-        this.output_path
-      );
+      this.signing = true;
+      try {
+        await window.AppWrapperAPI.runSigningScript(
+          this.unsigned_apk_path,
+          this.key_path,
+          this.output_path,
+          this.keystorePassword,
+          this.keyPassword
+        );
+        this.keystorePassword = "";
+        this.keyPassword = "";
+        Notify.create("APK signed and verified.");
+      } catch (error) {
+        Notify.create({ message: error.message, type: "negative" });
+      } finally {
+        this.signing = false;
+      }
     },
   },
 };
