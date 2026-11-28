@@ -6,81 +6,20 @@ import {
   nativeImage,
   shell,
 } from "electron";
-const { exec, spawn } = require("node:child_process");
+const { spawn } = require("node:child_process");
 const fs = require("node:fs");
-import path from "path";
-import os from "os";
-import { execSync, spawnSync } from "child_process";
-
-// needed in case process is undefined under Linux
-const platform = process.platform || os.platform();
+import path from "node:path";
+const {
+  wrapperPaths,
+  copyWrapperFiles,
+  editAppFromSettings,
+} = require("./main-process.cjs");
+const { createSigningKey, signApk } = require("./signing.cjs");
 
 let mainWindow;
 
-function getHTMLwithURL(url) {
-  return `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body style="margin: 0px; padding: 0px; overflow: hidden">
-    <iframe
-      title="Testing"
-      height=""
-      allowtransparency="true"
-      width=""
-      frameborder="0"
-      id="iframe"
-      src="${url}"
-      style="pointer-events: auto"
-    ></iframe>
-  </body>
-
-  <script>
-    window.addEventListener("deviceorientation", (e) => {handleFrameSize()}, true);
-    handleFrameSize();
-    function handleFrameSize() {
-      document
-        .getElementById("iframe")
-        .setAttribute("height", window.innerHeight);
-      document.getElementById("iframe").setAttribute("width", window.innerWidth);
-    }
-  </script>
-</html>
-  `;
-}
-
-function getConfigWithAppId(appid, app_name, use_website, website_URL) {
-  return `{
-  "appId": "${appid}",
-  "appName": "${app_name}",
-  "webDir": "${use_website ? "www" : website_URL.replace(/\\/g, "/")}",
-  "server": {
-    "androidScheme": "https"
-  }
-}
-`;
-}
-function getVariablesWithTargetSDKver(target_sdk_version) {
-  return `ext {
-    minSdkVersion = 22
-    compileSdkVersion = ${target_sdk_version}
-    targetSdkVersion = ${target_sdk_version}
-    androidxActivityVersion = '1.7.0'
-    androidxAppCompatVersion = '1.6.1'
-    androidxCoordinatorLayoutVersion = '1.2.0'
-    androidxCoreVersion = '1.10.0'
-    androidxFragmentVersion = '1.5.6'
-    coreSplashScreenVersion = '1.0.0'
-    androidxWebkitVersion = '1.6.1'
-    junitVersion = '4.13.2'
-    androidxJunitVersion = '1.1.5'
-    androidxEspressoCoreVersion = '3.5.1'
-    cordovaAndroidVersion = '10.1.1'
-}
-`;
+function getWrapperPaths() {
+  return wrapperPaths(app.getPath("documents"));
 }
 
 function createWindow() {
@@ -154,7 +93,7 @@ app.on("window-all-closed", async () => {
   // await bat.stdin.end();
   // await bat.stdout.end();
   // await bat.kill();
-  if (platform !== "darwin") {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
@@ -171,168 +110,38 @@ function killTerminalProcess() {
   }
 }
 
-// function getPublicPath() {
-//   return path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
-// }
 function getPathOfOutput() {
-  return path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "capacitor_config",
-    "android",
-    "app",
-    "build",
-    "outputs",
-    "apk"
-  );
+  return getWrapperPaths().apkOutput;
 }
 
-async function copyFilesForAllProcesses(e) {
-  if (
-    !fs.existsSync(
-      path.resolve(app.getPath("documents")),
-      "Android App Wrapper"
-    )
-  ) {
-    fs.mkdirSync(
-      path.resolve(app.getPath("documents"), "Android App Wrapper"),
-      {
-        recursive: true,
-      }
-    );
-  }
-  await new Promise((resolve, reject) => {
-    fs.cp(
-      path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER),
-      path.resolve(app.getPath("documents"), "Android App Wrapper"),
-      { recursive: true, force: true },
-      () => {
-        resolve();
-      }
-    );
-  });
+async function copyFilesForAllProcesses() {
+  const publicDirectory = path.resolve(__dirname, process.env.QUASAR_PUBLIC_FOLDER);
+  const toolchainDirectory = path.join(
+    app.isPackaged ? process.resourcesPath : publicDirectory, "toolchain"
+  );
+  await copyWrapperFiles(publicDirectory, toolchainDirectory, getWrapperPaths());
 }
 
-function runScriptToSign(e, unsigned_apk_path, key_path, output_path) {
-  console.log(`${output_path}\\my-app-unsigned-aligned.apk`);
-  try {
-    fs.rmSync(`${output_path}\\my-app-unsigned-aligned.apk`);
-    fs.rmSync(`${output_path}\\my-app-release.apk`);
-    fs.rmSync(`${output_path}\\my-app-release.apk.idsig`);
-    fs.rmSync(
-      path.resolve(
-        app.getPath("documents"),
-        "Android App Wrapper",
-        "capacitor_config",
-        "android",
-        ".gradle"
-      ),
-      { recursive: true, force: true }
-    );
-  } catch (e) {
-    console.log(e);
-  }
-  var keysigncreation_process_file_path = `${path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "keysign_signing.bat"
-  )}`;
-  var content = `call cd "${path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper"
-  )}\\commandlinetools-win-10406996_latest\\build-tools\\34.0.0"
-\r\ncall zipalign -v -p 4 "${unsigned_apk_path}" "${output_path}\\my-app-unsigned-aligned.apk"
-\r\ncall apksigner sign --ks "${key_path}" --out "${output_path}\\my-app-release.apk" "${output_path}\\my-app-unsigned-aligned.apk"
-\r\ncall apksigner verify "${output_path}\\my-app-release.apk"
- \r\ncall explorer.exe  "${output_path}"
- \r\ncall pause`;
-  fs.writeFileSync(keysigncreation_process_file_path, content);
-
-  shell.openPath(keysigncreation_process_file_path);
+async function runScriptToSign(event, unsignedApk, keystore, output, password, keyPassword) {
+  const release = await signApk(getWrapperPaths(), unsignedApk, keystore, output, password, keyPassword);
+  shell.showItemInFolder(release);
+  return release;
 }
 
-async function editAppFromSettings(
-  website_URL,
-  app_ID,
-  app_name,
-  target_sdk_ver,
-  overwrite_settings,
-  use_website
-) {
-  if (use_website) {
-    fs.writeFileSync(
-      path.resolve(
-        app.getPath("documents"),
-        "Android App Wrapper",
-        "capacitor_config",
-        "www",
-        "index.html"
-      ),
-      getHTMLwithURL(website_URL)
-    );
-  }
-  fs.writeFileSync(
-    path.resolve(
-      app.getPath("documents"),
-      "Android App Wrapper",
-      "capacitor_config",
-      "capacitor.config.json"
-    ),
-    getConfigWithAppId(app_ID, app_name, use_website, website_URL)
-  );
-  if (overwrite_settings) {
-    fs.writeFileSync(
-      path.resolve(
-        app.getPath("documents"),
-        "Android App Wrapper",
-        "capacitor_config",
-        "android",
-        "variables.gradle"
-      ),
-      getVariablesWithTargetSDKver(target_sdk_ver ? target_sdk_ver : 33)
-    );
-  }
-}
-async function openFileFolderSelector(e, filters) {
-  var apk_path = path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "capacitor_config",
-    "android",
-    "app",
-    "build",
-    "outputs",
-    "apk",
-    "debug"
-  );
-  var jks_path = path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "jdk-17_windows-x64_bin",
-    "jdk-17.0.9",
-    "bin"
-  );
-  var { canceled, filePaths } = await getPaths(filters);
-  async function getPaths(filters) {
-    if (filters) {
-      return await dialog.showOpenDialog({
-        title: "Select directories with jpg/png",
-        properties: ["openFile"],
-        defaultPath: filters[0] == "apk" ? apk_path : jks_path,
-        filters: [{ name: "Files", extensions: filters }],
-      });
-    } else {
-      return await dialog.showOpenDialog({
-        title: "Select directories with jpg/png",
-        properties: ["openDirectory"],
-        filters: [{ name: "Output" }],
-      });
+async function openFileFolderSelector(event, filters) {
+  const paths = getWrapperPaths();
+  const options = Array.isArray(filters) && filters.length
+    ? {
+      title: "Select file",
+      properties: ["openFile"],
+      defaultPath: filters[0] === "apk" ? path.join(paths.apkOutput, "debug") : paths.signingKeys,
+      filters: [{ name: "Files", extensions: filters }],
     }
-  }
-  if (!canceled) {
-    return filePaths[0];
-  }
+    : { title: "Select folder", properties: ["openDirectory"] };
+  const { canceled, filePaths } = await dialog.showOpenDialog(options);
+  if (!canceled) return filePaths[0];
 }
+
 async function selectAndShowIMG(event) {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     title: "Select directories with jpg/png",
@@ -353,12 +162,7 @@ async function selectAndShowIMG(event) {
 }
 
 function setupIconsForBuild(event, _paths) {
-  let _current_path = path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "capacitor_config",
-    "resources"
-  );
+  const _current_path = path.join(getWrapperPaths().project, "resources");
   try {
     fs.rmSync(_current_path, { recursive: true, force: true });
   } catch (e) {
@@ -401,23 +205,14 @@ function setupIconsForBuild(event, _paths) {
 // }
 
 async function openAndroidManifest() {
-  await shell.openPath(
-    path.resolve(
-      app.getPath("documents"),
-      "Android App Wrapper",
-      "capacitor_config",
-      "android",
-      "app",
-      "src",
-      "main",
-      "AndroidManifest.xml"
-    )
+  const manifest = path.join(
+    getWrapperPaths().android, "app", "src", "main", "AndroidManifest.xml"
   );
+  await shell.openPath(manifest);
 }
+
 async function openConfigFolder() {
-  await shell.openPath(
-    path.resolve(app.getPath("documents"), "Android App Wrapper")
-  );
+  await shell.openPath(getWrapperPaths().root);
 }
 
 async function getOutputForTerminal() {
@@ -426,113 +221,53 @@ async function getOutputForTerminal() {
   return output;
 }
 
-async function runKeyCreationScriptForSign(
-  event,
-  key_name,
-  key_validity,
-  key_alias
-) {
-  var keysigncreation_process_file_path = `${path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper",
-    "keysign_creation.bat"
-  )}`;
-  var content = `call cd "${path.resolve(
-    app.getPath("documents"),
-    "Android App Wrapper"
-  )}\\jdk-17_windows-x64_bin\\jdk-17.0.9\\bin"
-\r\ncall keytool -genkey -v -keystore ${key_name}.jks -keyalg RSA -keysize 2048 -validity ${key_validity} -alias ${key_alias}
-\r\npause
-  `;
-  fs.writeFileSync(keysigncreation_process_file_path, content);
-
-  shell.openPath(keysigncreation_process_file_path);
+async function runKeyCreationScriptForSign(event, name, validity, alias, owner, password) {
+  const key = await createSigningKey(getWrapperPaths(), name, validity, alias, owner, password);
+  shell.showItemInFolder(key);
+  return key;
 }
 
 async function runWrappingScript(
   event,
-  website_URL,
-  app_ID,
-  app_name,
-  target_sdk_ver,
-  overwrite_settings,
-  use_website,
+  source,
+  appId,
+  appName,
+  targetSdk,
+  overwriteSettings,
+  useWebsite,
   fortest,
   clean
 ) {
-  await editAppFromSettings(
-    website_URL,
-    app_ID,
-    app_name,
-    target_sdk_ver,
-    overwrite_settings,
-    use_website,
-    fortest
-  );
-  var wrapping_process_file_path = null;
-  if (clean) {
-    fs.rmSync(
-      path.resolve(
-        app.getPath("documents"),
-        "Android App Wrapper",
-        "capacitor_config",
-        "android"
-      ),
-      { recursive: true, force: true }
-    );
-    wrapping_process_file_path = `${path.resolve(
-      app.getPath("documents"),
-      "Android App Wrapper",
-      "app_clean_wrap_apk.bat"
-    )}`;
-  } else {
-    wrapping_process_file_path = `${path.resolve(
-      app.getPath("documents"),
-      "Android App Wrapper",
-      fortest == "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat"
-    )}`;
-  }
-  setupTerminalProcess(wrapping_process_file_path);
+  if (bat) throw new Error("An Android build is already running.");
+
+  const paths = getWrapperPaths();
+  await editAppFromSettings(paths, {
+    source, appId, appName, targetSdk, overwriteSettings, useWebsite,
+  });
+  const script = clean ? "app_clean_wrap_apk.bat"
+    : fortest === "fortest" ? "app_test_apk.bat" : "app_wrap_apk.bat";
+  setupTerminalProcess(script, paths.root);
 }
 
-function setupTerminalProcess(file_path) {
-  killTerminalProcess();
-  bat = spawn(file_path);
-  terminal_logs = null;
-  bat.stdout.on("data", (data) => {
-    // console.log(`${data.toString()}`);
-    // console.log(data.toString().indexOf("png"));
-    // console.log(data.toString().split(/\n/g));
-    // console.log(
-    //   data.toString().charCodeAt(data.toString().indexOf("png") + 14)
-    // );
-    // console.log("================================");
-    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
-  });
-  bat.stderr.on("data", (data) => {
-    // console.log(data.toString());
-    // console.log(data.toString().charCodeAt(data.length - 1));
-    // console.log("--------------------------------------------------------");
-    terminal_logs += `${data.toString().replace(/\n/g, "\r\n\r\n")}`;
-  });
+function setupTerminalProcess(script, cwd) {
+  const cmd = path.join(process.env.SystemRoot, "System32", "cmd.exe");
+  bat = spawn(cmd, ["/d", "/c", script], { cwd, windowsHide: true });
+  terminal_logs = "";
 
-  bat.on("close", (code) => {
-    if (!code) {
-      var _exit_message = `\r\nprocess exited with code "x"`;
-    } else {
-      var _exit_message = `\r\nprocess exited with code ${code}`;
-    }
-    terminal_logs += `${_exit_message.toString()}`;
-    shell.openPath(getPathOfOutput());
-    // console.log("________________________________________________");
-    // console.log(_exit_message);
+  const log = (data) => { terminal_logs += data.toString().replace(/\r?\n/g, "\r\n"); };
+  bat.stdout.on("data", log);
+  bat.stderr.on("data", log);
+  bat.on("error", (error) => log(`\r\nCould not launch build script. ${error.message}`));
+  bat.stdin.on("error", (error) => log(`\r\n${error.message}`));
+  bat.on("close", (code, signal) => {
+    bat = null;
+    log(`\r\nprocess exited with code ${code ?? signal ?? "unknown"}`);
+    if (code === 0) shell.openPath(getPathOfOutput());
   });
 }
 
 function sendInputToTerminal(event, escapeCode) {
-  console.log("escapeCode: ");
-  console.log(escapeCode);
-  bat.stdin.write(escapeCode);
+  if (bat?.stdin.writable) bat.stdin.write(escapeCode);
 }
 
 async function runScript(e, _command) {

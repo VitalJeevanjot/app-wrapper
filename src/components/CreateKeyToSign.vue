@@ -46,6 +46,25 @@
             style="width: 60vw; min-width: 250px"
           />
         </div>
+        <div class="row justify-center q-ma-sm">
+          <q-input
+            outlined
+            v-model="certificateOwner"
+            label="Certificate owner (e.g. CN=Your Name)"
+            color="black"
+            style="width: 60vw; min-width: 250px"
+          />
+        </div>
+        <div class="row justify-center q-ma-sm">
+          <q-input
+            outlined
+            v-model="keystorePassword"
+            type="password"
+            label="Keystore password (at least 6 characters)"
+            color="black"
+            style="width: 60vw; min-width: 250px"
+          />
+        </div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -54,6 +73,7 @@
           flat
           class="q-ma-sm bg-grey-10 text-white"
           @click="createKeyToSign"
+          :loading="creating"
           style="min-width: 250px; width: 10vw"
           >Create key</q-btn
         >
@@ -63,6 +83,8 @@
 </template>
 
 <script>
+import { Notify } from "quasar";
+
 export default {
   name: "CreateKeyToSign",
   data() {
@@ -71,15 +93,30 @@ export default {
       key_name: "app-release-key",
       key_validity: 10000,
       key_alias: "my-alias",
+      certificateOwner: "",
+      keystorePassword: "",
+      creating: false,
     };
   },
   methods: {
     async createKeyToSign() {
-      await window.AppWrapperAPI.runKeyCreationScriptForSign(
-        this.key_name,
-        this.key_validity,
-        this.key_alias
-      );
+      this.creating = true;
+      try {
+        await window.AppWrapperAPI.runKeyCreationScriptForSign(
+          this.key_name,
+          this.key_validity,
+          this.key_alias,
+          this.certificateOwner,
+          this.keystorePassword
+        );
+        this.keystorePassword = "";
+        this.createKeyToSignDialog = false;
+        Notify.create("Signing key created.");
+      } catch (error) {
+        Notify.create({ message: error.message, type: "negative" });
+      } finally {
+        this.creating = false;
+      }
     },
   },
 };

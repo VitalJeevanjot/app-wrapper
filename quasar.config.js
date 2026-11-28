@@ -187,6 +187,9 @@ module.exports = configure(function (/* ctx */) {
         // https://www.electron.build/configuration/configuration
         appId: "27126VitalVictor.AppWebsiteWrapper",
         asar: false,
+        files: ["**/*", "!toolchain{,/**/*}"],
+        // Include the bundled npm tree as data so electron-builder keeps its node_modules.
+        extraResources: [{ from: "public/toolchain", to: "toolchain" }],
         win: {
           target: "appx", // or appx or more
         },

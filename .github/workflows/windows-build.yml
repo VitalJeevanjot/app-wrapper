@@ -1,0 +1,47 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  appx:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - run: npm test
+      - name: Check packaged toolchain
+        shell: pwsh
+        run: |
+          $bin = "dist/electron/Packaged/win-unpacked/resources/toolchain"
+          foreach ($file in @(
+            "node/node.exe", "node/node_modules/npm/bin/npm-cli.js",
+            "jdk/bin/java.exe", "jdk/bin/keytool.exe",
+            "android-sdk/cmdline-tools/latest/bin/sdkmanager.bat"
+          )) {
+            if (-not (Test-Path "$bin/$file" -PathType Leaf)) {
+              throw "Missing packaged toolchain file: $file"
+            }
+          }
+          & "$bin/node/node.exe" "$bin/node/node_modules/npm/bin/npm-cli.js" --version
+          if ($LASTEXITCODE -ne 0) { throw "Packaged npm could not start" }
+          $env:JAVA_HOME = (Resolve-Path "$bin/jdk").Path
+          & "$bin/android-sdk/cmdline-tools/latest/bin/sdkmanager.bat" --version
+          if ($LASTEXITCODE -ne 0) { throw "Packaged sdkmanager could not start" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-appx
+          path: dist/electron/Packaged/*.appx
+          if-no-files-found: error
