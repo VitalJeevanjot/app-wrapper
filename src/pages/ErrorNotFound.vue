@@ -1,31 +1,40 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="error-page bg-blue text-white text-center q-pa-md flex flex-center">
     <div>
-      <div style="font-size: 30vh">
-        404
-      </div>
-
-      <div class="text-h2" style="opacity:.4">
-        Oops. Nothing here...
-      </div>
-
+      <div class="error-code">404</div>
+      <h1 class="error-message q-mt-md q-mb-none">{{ $t("errors.notFound") }}</h1>
       <q-btn
-        class="q-mt-xl"
+        class="q-mt-xl app-action"
         color="white"
         text-color="blue"
         unelevated
         to="/"
-        label="Go Home"
+        :label="$t('errors.goHome')"
         no-caps
       />
     </div>
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<style scoped>
+.error-page {
+  min-height: 100vh;
+}
 
-export default defineComponent({
-  name: 'ErrorNotFound'
-})
+.error-code {
+  font-size: clamp(4rem, 24vmin, 11rem);
+  line-height: 1;
+}
+
+.error-message {
+  font-size: clamp(1.5rem, 5vw, 3.75rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+</style>
+
+<script>
+export default {
+  name: "ErrorNotFound",
+};
 </script>

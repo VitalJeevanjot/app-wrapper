@@ -1,0 +1,76 @@
+{
+  "common": {
+    "close": "Close",
+    "notSelected": "Not selected"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "system": "System language"
+  },
+  "project": {
+    "source": "Website URL or project folder",
+    "websiteUrl": "Enter the website URL",
+    "directoryPath": "Select a project folder",
+    "appId": "App ID (e.g. {example})",
+    "appName": "App name",
+    "targetSdk": "Target SDK version (e.g. {example})",
+    "overwriteSdk": "Use this target SDK in the Gradle variables file",
+    "imageHint": "Select an image to upload it. Icons must be at least {iconSize} and splash screens at least {splashSize}.",
+    "imageDetails": "Image details for {image}",
+    "iconOnly": "Icon only",
+    "iconForeground": "Icon foreground",
+    "iconBackground": "Icon background",
+    "splash": "Splash screen",
+    "splashDark": "Dark splash screen",
+    "build": "Build",
+    "cleanBuild": "Clean build",
+    "test": "Test",
+    "install": "Install dependencies",
+    "config": "Config folder",
+    "logs": "Recent logs",
+    "reset": "Reset images",
+    "help": "How to use",
+    "websiteRequired": "Enter a website URL.",
+    "directoryRequired": "Select a project folder.",
+    "identityRequired": "Enter an app ID and name.",
+    "copying": "Copying files…",
+    "copyFailed": "Could not copy the required files.",
+    "buildFailed": "Could not start the build."
+  },
+  "signing": {
+    "production": "Production",
+    "unsignedApk": "Select the unsigned APK",
+    "keystore": "Select the key file ({extension})",
+    "output": "Select the output folder",
+    "sign": "Sign",
+    "pathsRequired": "Select the APK, key file, and output folder.",
+    "createKeyAction": "Create a signing key",
+    "createKey": "Create key",
+    "keyName": "Key name",
+    "validity": "Key validity (days)",
+    "alias": "Key alias",
+    "signFailed": "Could not start signing.",
+    "keyFailed": "Could not start key creation."
+  },
+  "dialogs": {
+    "chooseFile": "Select a file",
+    "chooseFolder": "Select a folder",
+    "chooseImage": "Select an image",
+    "files": "Files",
+    "images": "Images"
+  },
+  "errors": {
+    "notFound": "This page could not be found.",
+    "goHome": "Go home"
+  },
+  "wrapper": {
+    "website": "Wrapped website"
+  },
+  "terminal": {
+    "title": "Terminal",
+    "exit": "process exited with code {code}",
+    "startFailed": "Could not start the build script.",
+    "outputPath": "Output path: {path}"
+  }
+}

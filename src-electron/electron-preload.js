@@ -30,6 +30,7 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("AppWrapperAPI", {
+  getLocale: () => ipcRenderer.invoke("get-locale"),
   runScriptFile: async (command) => {
     return await ipcRenderer.invoke("run-script", command);
   },
@@ -42,8 +43,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
   // buildAppFromURL: (url) => {
   //   return ipcRenderer.invoke("build-app-from-URL", url);
   // },
-  selectAndShowImage: () => {
-    return ipcRenderer.invoke("select-and-show-IMG");
+  selectAndShowImage: (title, filterName) => {
+    return ipcRenderer.invoke("select-and-show-IMG", title, filterName);
   },
   getBuildCommands: () => {
     return ipcRenderer.invoke("get-build-commands");
@@ -59,7 +60,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
     overwrite_settings,
     use_website,
     fortest,
-    clean
+    clean,
+    view
   ) => {
     return ipcRenderer.invoke(
       "run-wrapping-script",
@@ -70,7 +72,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       overwrite_settings,
       use_website,
       fortest,
-      clean
+      clean,
+      view
     );
   },
   getOutputForTerminal: () => {
@@ -99,8 +102,8 @@ contextBridge.exposeInMainWorld("AppWrapperAPI", {
       key_alias
     );
   },
-  openFileFolderSelector: async (filters) => {
-    return await ipcRenderer.invoke("open-file-folder-selector", filters);
+  openFileFolderSelector: (filters, title, filterName) => {
+    return ipcRenderer.invoke("open-file-folder-selector", filters, title, filterName);
   },
   runSigningScript: async (unsigned_apk_path, key_path, output_path) => {
     await ipcRenderer.invoke(

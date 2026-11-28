@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Sluiten",
+    "notSelected": "Niet geselecteerd"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "language": "Taal",
+    "system": "Systeemtaal"
+  },
+  "project": {
+    "source": "Website-URL of projectmap",
+    "websiteUrl": "Voer de website-URL in",
+    "directoryPath": "Selecteer een projectmap",
+    "appId": "App-ID (bijv. {example})",
+    "appName": "Appnaam",
+    "targetSdk": "Doel-SDK-versie (bijv. {example})",
+    "overwriteSdk": "Gebruik deze doel-SDK in het Gradle-variabelenbestand",
+    "imageHint": "Selecteer een afbeelding om deze te uploaden. Pictogrammen moeten minimaal {iconSize} zijn en opstartschermen minimaal {splashSize}.",
+    "imageDetails": "Afbeeldingsdetails voor {image}",
+    "iconOnly": "Alleen pictogram",
+    "iconForeground": "Voorgrond van pictogram",
+    "iconBackground": "Achtergrond van pictogram",
+    "splash": "Opstartscherm",
+    "splashDark": "Donker opstartscherm",
+    "build": "Bouwen",
+    "cleanBuild": "Schone build",
+    "test": "Testen",
+    "install": "Afhankelijkheden installeren",
+    "config": "Configuratiemap",
+    "logs": "Recente logboeken",
+    "reset": "Afbeeldingen herstellen",
+    "help": "Gebruiksaanwijzing",
+    "websiteRequired": "Voer een website-URL in.",
+    "directoryRequired": "Selecteer een projectmap.",
+    "identityRequired": "Voer een app-ID en een naam in.",
+    "copying": "Bestanden kopiëren…",
+    "copyFailed": "De vereiste bestanden konden niet worden gekopieerd.",
+    "buildFailed": "De build kon niet worden gestart."
+  },
+  "signing": {
+    "production": "Productie",
+    "unsignedApk": "Selecteer de niet-ondertekende APK",
+    "keystore": "Selecteer het sleutelbestand ({extension})",
+    "output": "Selecteer de uitvoermap",
+    "sign": "Ondertekenen",
+    "pathsRequired": "Selecteer de APK, het sleutelbestand en de uitvoermap.",
+    "createKeyAction": "Ondertekeningssleutel maken",
+    "createKey": "Sleutel maken",
+    "keyName": "Sleutelnaam",
+    "validity": "Geldigheid van de sleutel (dagen)",
+    "alias": "Sleutelalias",
+    "signFailed": "Ondertekenen kon niet worden gestart.",
+    "keyFailed": "De sleutel kon niet worden aangemaakt."
+  },
+  "dialogs": {
+    "chooseFile": "Bestand selecteren",
+    "chooseFolder": "Map selecteren",
+    "chooseImage": "Afbeelding selecteren",
+    "files": "Bestanden",
+    "images": "Afbeeldingen"
+  },
+  "errors": {
+    "notFound": "Deze pagina is niet gevonden.",
+    "goHome": "Naar de startpagina"
+  },
+  "wrapper": {
+    "website": "Ingesloten website"
+  }
+}

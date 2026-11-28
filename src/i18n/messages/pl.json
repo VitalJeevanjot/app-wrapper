@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Zamknij",
+    "notSelected": "Nie wybrano"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "language": "Język",
+    "system": "Język systemu"
+  },
+  "project": {
+    "source": "Adres URL witryny lub folder projektu",
+    "websiteUrl": "Wpisz adres URL witryny",
+    "directoryPath": "Wybierz folder projektu",
+    "appId": "Identyfikator aplikacji (np. {example})",
+    "appName": "Nazwa aplikacji",
+    "targetSdk": "Wersja docelowego SDK (np. {example})",
+    "overwriteSdk": "Użyj tego docelowego SDK w pliku zmiennych Gradle",
+    "imageHint": "Wybierz obraz do przesłania. Ikony muszą mieć co najmniej {iconSize}, a ekrany powitalne co najmniej {splashSize}.",
+    "imageDetails": "Szczegóły obrazu: {image}",
+    "iconOnly": "Tylko ikona",
+    "iconForeground": "Pierwszy plan ikony",
+    "iconBackground": "Tło ikony",
+    "splash": "Ekran powitalny",
+    "splashDark": "Ciemny ekran powitalny",
+    "build": "Kompiluj",
+    "cleanBuild": "Czysta kompilacja",
+    "test": "Testuj",
+    "install": "Zainstaluj zależności",
+    "config": "Folder konfiguracji",
+    "logs": "Ostatnie dzienniki",
+    "reset": "Zresetuj obrazy",
+    "help": "Instrukcja obsługi",
+    "websiteRequired": "Wpisz adres URL witryny.",
+    "directoryRequired": "Wybierz folder projektu.",
+    "identityRequired": "Wpisz identyfikator i nazwę aplikacji.",
+    "copying": "Kopiowanie plików…",
+    "copyFailed": "Nie udało się skopiować wymaganych plików.",
+    "buildFailed": "Nie udało się rozpocząć kompilacji."
+  },
+  "signing": {
+    "production": "Produkcja",
+    "unsignedApk": "Wybierz niepodpisany plik APK",
+    "keystore": "Wybierz plik klucza ({extension})",
+    "output": "Wybierz folder wyjściowy",
+    "sign": "Podpisz",
+    "pathsRequired": "Wybierz plik APK, plik klucza i folder wyjściowy.",
+    "createKeyAction": "Utwórz klucz do podpisywania",
+    "createKey": "Utwórz klucz",
+    "keyName": "Nazwa klucza",
+    "validity": "Ważność klucza (dni)",
+    "alias": "Alias klucza",
+    "signFailed": "Nie udało się rozpocząć podpisywania.",
+    "keyFailed": "Nie udało się rozpocząć tworzenia klucza."
+  },
+  "dialogs": {
+    "chooseFile": "Wybierz plik",
+    "chooseFolder": "Wybierz folder",
+    "chooseImage": "Wybierz obraz",
+    "files": "Pliki",
+    "images": "Obrazy"
+  },
+  "errors": {
+    "notFound": "Nie znaleziono tej strony.",
+    "goHome": "Przejdź do strony głównej"
+  },
+  "wrapper": {
+    "website": "Osadzona witryna"
+  }
+}

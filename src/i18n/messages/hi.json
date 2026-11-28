@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "बंद करें",
+    "notSelected": "नहीं चुना गया"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "system": "सिस्टम की भाषा"
+  },
+  "project": {
+    "source": "वेबसाइट का URL या प्रोजेक्ट फ़ोल्डर",
+    "websiteUrl": "वेबसाइट का URL डालें",
+    "directoryPath": "प्रोजेक्ट फ़ोल्डर चुनें",
+    "appId": "ऐप आईडी (जैसे {example})",
+    "appName": "ऐप का नाम",
+    "targetSdk": "लक्ष्य SDK का संस्करण (जैसे {example})",
+    "overwriteSdk": "Gradle की वैरिएबल फ़ाइल में यह लक्ष्य SDK इस्तेमाल करें",
+    "imageHint": "अपलोड करने के लिए इमेज चुनें। आइकन कम से कम {iconSize} और स्प्लैश स्क्रीन कम से कम {splashSize} की होनी चाहिए।",
+    "imageDetails": "इमेज का विवरण: {image}",
+    "iconOnly": "केवल आइकन",
+    "iconForeground": "आइकन का अग्रभाग",
+    "iconBackground": "आइकन की पृष्ठभूमि",
+    "splash": "स्प्लैश स्क्रीन",
+    "splashDark": "गहरे रंग की स्प्लैश स्क्रीन",
+    "build": "बिल्ड करें",
+    "cleanBuild": "क्लीन बिल्ड",
+    "test": "टेस्ट करें",
+    "install": "डिपेंडेंसी इंस्टॉल करें",
+    "config": "कॉन्फ़िगरेशन फ़ोल्डर",
+    "logs": "हाल के लॉग",
+    "reset": "इमेज रीसेट करें",
+    "help": "इस्तेमाल का तरीका",
+    "websiteRequired": "वेबसाइट का URL डालें।",
+    "directoryRequired": "प्रोजेक्ट फ़ोल्डर चुनें।",
+    "identityRequired": "ऐप की आईडी और नाम डालें।",
+    "copying": "फ़ाइलें कॉपी हो रही हैं…",
+    "copyFailed": "ज़रूरी फ़ाइलें कॉपी नहीं हो सकीं।",
+    "buildFailed": "बिल्ड शुरू नहीं हो सका।"
+  },
+  "signing": {
+    "production": "प्रोडक्शन मोड",
+    "unsignedApk": "बिना हस्ताक्षर वाला APK चुनें",
+    "keystore": "कुंजी की फ़ाइल चुनें ({extension})",
+    "output": "आउटपुट फ़ोल्डर चुनें",
+    "sign": "हस्ताक्षर करें",
+    "pathsRequired": "APK, कुंजी की फ़ाइल और आउटपुट फ़ोल्डर चुनें।",
+    "createKeyAction": "हस्ताक्षर की कुंजी बनाएँ",
+    "createKey": "कुंजी बनाएँ",
+    "keyName": "कुंजी का नाम",
+    "validity": "कुंजी की वैधता (दिन)",
+    "alias": "कुंजी का उपनाम",
+    "signFailed": "हस्ताक्षर शुरू नहीं हो सका।",
+    "keyFailed": "कुंजी बनाना शुरू नहीं हो सका।"
+  },
+  "dialogs": {
+    "chooseFile": "फ़ाइल चुनें",
+    "chooseFolder": "फ़ोल्डर चुनें",
+    "chooseImage": "इमेज चुनें",
+    "files": "फ़ाइलें",
+    "images": "इमेज"
+  },
+  "errors": {
+    "notFound": "यह पेज नहीं मिला।",
+    "goHome": "होम पर जाएँ"
+  },
+  "wrapper": {
+    "website": "ऐप में एम्बेड की गई वेबसाइट"
+  }
+}

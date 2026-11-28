@@ -1,0 +1,70 @@
+{
+  "common": {
+    "close": "Fechar",
+    "notSelected": "Não selecionado"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "system": "Idioma do sistema"
+  },
+  "project": {
+    "source": "URL do site ou pasta do projeto",
+    "websiteUrl": "Digite a URL do site",
+    "directoryPath": "Selecione uma pasta de projeto",
+    "appId": "ID do app (ex.: {example})",
+    "appName": "Nome do app",
+    "targetSdk": "Versão do SDK de destino (ex.: {example})",
+    "overwriteSdk": "Usar este SDK de destino no arquivo de variáveis do Gradle",
+    "imageHint": "Selecione uma imagem para carregá-la. Os ícones devem ter pelo menos {iconSize} e as telas de abertura, pelo menos {splashSize}.",
+    "imageDetails": "Detalhes da imagem: {image}",
+    "iconOnly": "Somente ícone",
+    "iconForeground": "Primeiro plano do ícone",
+    "iconBackground": "Fundo do ícone",
+    "splash": "Tela de abertura",
+    "splashDark": "Tela de abertura escura",
+    "build": "Compilar",
+    "cleanBuild": "Compilação limpa",
+    "test": "Testar",
+    "install": "Instalar dependências",
+    "config": "Pasta de configuração",
+    "logs": "Registros recentes",
+    "reset": "Redefinir imagens",
+    "help": "Como usar",
+    "websiteRequired": "Digite a URL do site.",
+    "directoryRequired": "Selecione uma pasta de projeto.",
+    "identityRequired": "Digite o ID e o nome do app.",
+    "copying": "Copiando arquivos…",
+    "copyFailed": "Não foi possível copiar os arquivos necessários.",
+    "buildFailed": "Não foi possível iniciar a compilação."
+  },
+  "signing": {
+    "production": "Produção",
+    "unsignedApk": "Selecione o APK sem assinatura",
+    "keystore": "Selecione o arquivo de chave ({extension})",
+    "output": "Selecione a pasta de saída",
+    "sign": "Assinar",
+    "pathsRequired": "Selecione o APK, o arquivo de chave e a pasta de saída.",
+    "createKeyAction": "Criar uma chave de assinatura",
+    "createKey": "Criar chave",
+    "keyName": "Nome da chave",
+    "validity": "Validade da chave (dias)",
+    "alias": "Alias da chave",
+    "signFailed": "Não foi possível iniciar a assinatura.",
+    "keyFailed": "Não foi possível iniciar a criação da chave."
+  },
+  "dialogs": {
+    "chooseFile": "Selecionar um arquivo",
+    "chooseFolder": "Selecionar uma pasta",
+    "chooseImage": "Selecionar uma imagem",
+    "files": "Arquivos",
+    "images": "Imagens"
+  },
+  "errors": {
+    "notFound": "Não foi possível encontrar esta página.",
+    "goHome": "Ir para o início"
+  },
+  "wrapper": {
+    "website": "Site incorporado"
+  }
+}
