@@ -194,7 +194,7 @@ module.exports = configure(function (/* ctx */) {
           displayName: "App Website Wrapper",
           publisher: "CN=D8EA149B-EABF-46F9-A877-703D35BFD389",
           publisherDisplayName: "VitalVictor",
-          languages: "en-GB",
+          languages: ["en-GB", "en-US"],
         },
         includeSubNodeModules: true,
       },
