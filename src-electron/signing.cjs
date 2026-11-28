@@ -94,7 +94,7 @@ async function createSigningKey(paths, name, validity, alias, owner, password) {
   }
 }
 
-async function signApk(paths, unsignedApk, keystore, outputDirectory, password, keyPassword) {
+async function signApk(paths, unsignedApk, keystore, outputDirectory, password, keyPassword = "") {
   validateText(password, "Keystore password");
   if (keyPassword !== "") validateText(keyPassword, "Key password");
 
@@ -119,14 +119,20 @@ async function signApk(paths, unsignedApk, keystore, outputDirectory, password, 
       "-jar", tools.apksigner, "sign", "--ks", key,
       "--ks-pass", "env:APP_WRAPPER_STORE_PASSWORD",
       "--key-pass", "env:APP_WRAPPER_KEY_PASSWORD",
-      "--v4-signing-enabled", "false", "--out", signed, aligned,
+      "--out", signed, aligned,
     ], {
       APP_WRAPPER_STORE_PASSWORD: password,
       APP_WRAPPER_KEY_PASSWORD: keyPassword || password,
     });
     await runTool("apksigner verify", paths.java, ["-jar", tools.apksigner, "verify", signed]);
     await fs.rename(signed, release);
-    await fs.rm(`${release}.idsig`, { force: true });
+    const stagedSignature = `${signed}.idsig`;
+    const signature = `${release}.idsig`;
+    if ((await fs.stat(stagedSignature).catch(missingFile))?.isFile()) {
+      await fs.rename(stagedSignature, signature);
+    } else {
+      await fs.rm(signature, { force: true });
+    }
     return release;
   } finally {
     await fs.rm(staging, { recursive: true, force: true });

@@ -37,6 +37,9 @@ jobs:
           }
           & "$bin/node/node.exe" "$bin/node/node_modules/npm/bin/npm-cli.js" --version
           if ($LASTEXITCODE -ne 0) { throw "Packaged npm could not start" }
+          $env:JAVA_HOME = (Resolve-Path "$bin/jdk").Path
+          & "$bin/android-sdk/cmdline-tools/latest/bin/sdkmanager.bat" --version
+          if ($LASTEXITCODE -ne 0) { throw "Packaged sdkmanager could not start" }
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64-appx
